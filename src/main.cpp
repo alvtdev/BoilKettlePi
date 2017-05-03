@@ -23,9 +23,23 @@ int main(void) {
 
 	/* Add new tasks here */
 	/* T->add_task(new Task(period_ms)); */
+
+	/* For tasks that rely on other tasks:
+	 *
+	 * Pressure p = new Pressure(period); 
+	 * T->add_task(p); 
+	 * T->add_task(new CalcGrav(period, &p)) ; 
+	 */
+
+
 	T->add_task(new Ping(1000));
+	T->add_task(new timecount(1000)); 
 	T->add_task(new Heater(500));
 	T->add_task(new Pump(3000));
+
+	Pressure p = new Pressure(1000);
+	T->add_task(p);
+
 
 	if(timer_init(T->get_period_ms()))
 		return 1;
