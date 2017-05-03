@@ -1,6 +1,6 @@
 # MashberryPi
 
-Automated mash tun controller on the RaspberryPi
+Automated boil kettle controller on the RaspberryPi
 
 ## WiringPi CMake issues
 
