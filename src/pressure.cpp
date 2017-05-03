@@ -6,7 +6,7 @@ Pressure::Pressure(int ms) : Task(ms) {
 	pres = 0;
 }
 
-double get_pressure() {
+double Pressure::get_pressure() {
 	return pres;
 }
 
@@ -23,7 +23,7 @@ int Pressure::tick_function() {
 		case GP:
 			state = WAIT;
 			break;
-		default
+		default:
 			state = INIT;
 			break;
 	}
@@ -40,7 +40,7 @@ int Pressure::tick_function() {
 			std::cout << "Getting Pressure" << std::endl;
 			//TODO: Actually get pressure readings
 			break;
-		default
+		default:
 			break;
 	}
 }

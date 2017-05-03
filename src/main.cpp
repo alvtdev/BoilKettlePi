@@ -12,6 +12,8 @@
 #include "ping.hpp"
 #include "heater.hpp"
 #include "pump.hpp"
+#include "pressure.hpp"
+#include "timecount.hpp"
 #include "timer.h"
 
 int main(void) {
@@ -33,12 +35,12 @@ int main(void) {
 
 
 	T->add_task(new Ping(1000));
-	T->add_task(new timecount(1000)); 
+	//T->add_task(new timecount(1000)); 
 	T->add_task(new Heater(500));
 	T->add_task(new Pump(3000));
 
-	Pressure p = new Pressure(1000);
-	T->add_task(p);
+//	Pressure p* = new Pressure(1000);
+	T->add_task(new Pressure(1000));
 
 
 	if(timer_init(T->get_period_ms()))

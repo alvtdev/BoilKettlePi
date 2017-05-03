@@ -26,7 +26,7 @@ using namespace std;
  * Initialize variables that are neccessary for all tasks
  */
 Task::Task(int ms) {
-	state = INIT;
+	state = 0;
 	period_ms = ms;
 	elapsed_time = ms;
 }

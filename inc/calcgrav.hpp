@@ -10,7 +10,7 @@
 #define CALCGRAV_HPP
 
 #include "task.hpp"
-
+#include "pressure.hpp"
 
 //TODO: modify class to include depth SM in constructor and as private member
 class Calcgrav : public Task {

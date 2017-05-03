@@ -6,7 +6,7 @@ timecount::timecount(int ms) : Task(ms) {
 	currtime = 0;
 }
 
-int get_currtime() { 
+int timecount::get_currtime() { 
 	return currtime;
 }
 

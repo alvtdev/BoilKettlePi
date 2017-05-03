@@ -8,6 +8,7 @@
 
 #include "task.hpp"
 #include "ping.hpp"
+#include "calcgrav.hpp"
 #include <iostream>
 
 //TODO: modify constructor to include depth(sonar) SM 
@@ -17,20 +18,20 @@
 //				^do this after implementing timing
 
 Calcgrav::Calcgrav(int ms, Pressure* pres) : Task(ms) {
-	this.pres = pres; 
+	this->pres = pres; 
 	specGravBegin = 0;
 	specGravEnd = 0;
 }
 
-double get_specGravBegin() {
+double Calcgrav::get_specGravBegin() {
 	return specGravBegin;
 }
 
-double get_specGravEnd() {
+double Calcgrav::get_specGravEnd() {
 	return specGravEnd;
 }
 
-double calc_specific_gravity() {
+double Calcgrav::calc_specific_gravity() {
 	double g = 9.81; // m per s^2
 	double p = pres->get_pressure(); 
 	double h = 0; 
@@ -38,7 +39,7 @@ double calc_specific_gravity() {
 	return p/(g*h);
 }
 
-int Calcgrave::tick_function() {
+int Calcgrav::tick_function() {
 
 	/* State transitions */
 	switch(state) {
@@ -51,10 +52,10 @@ int Calcgrave::tick_function() {
 			 * GRAV_END occurs after boiling, and saves result to specGravEnd
 			 * TODO: properly implement this (done when timer is set)
 			 */
-			state = GRAV_BEGIN
+			state = GRAV_BEGIN;
 			break;
 		case GRAV_BEGIN:
-			state = WAIT
+			state = WAIT;
 			break;
 		case GRAV_END:
 			break;
