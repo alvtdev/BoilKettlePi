@@ -6,6 +6,10 @@ Pressure::Pressure(int ms) : Task(ms) {
 	pres = 0;
 }
 
+double get_pressure() {
+	return pres;
+}
+
 int Pressure::tick_function() {
 	
 	/* State transitions */

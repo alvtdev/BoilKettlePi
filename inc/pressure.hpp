@@ -11,6 +11,7 @@
 class Pressure : public Task {
 	public: 
 		Pressure(int ms);
+		double get_pressure();
 
 	private:
 		enum States {INIT, WAIT, GP} state; //GP = get pressure
