@@ -17,6 +17,7 @@ class Pressure : public Task {
 	private:
 		enum States {INIT, WAIT, GP} state; //GP = get pressure
 		double pres; //stores pressure value from reading
+		double poll_pressure();
 
 		virtual int tick_function();
 

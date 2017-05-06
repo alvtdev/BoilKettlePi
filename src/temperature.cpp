@@ -1,24 +1,24 @@
 #include "task.hpp"
-#include "pressure.hpp"
+#include "temperature.hpp"
 #include <iostream>
 #include <wiringPi.h>
 #include "ads1115.h"
 
-Pressure::Pressure(int ms) : Task(ms) {
+Temperature::Temperature(int ms) : Task(ms) {
 	pres = 0;
 }
 
-double Pressure::get_pressure() {
-	return pres;
+double Temperature::get_temperature() {
+	return temperature;
 }
 
-double Pressure::poll_pressure() {
-	double ptemp = analogRead(2222);
-	//TODO: perform conversion from voltage reading to pressure value
-	return ptemp;
+double Temperature::poll_temperature() {
+	double ttemp = analogRead(2222);
+	//TODO: perform conversion from voltage reading to temperature value
+	return ttemp;
 }
 
-int Pressure::tick_function() {
+int Temperature::tick_function() {
 	
 	/* State transitions */
 	switch(state) {
@@ -44,8 +44,8 @@ int Pressure::tick_function() {
 			//test output
 			break;
 		case GP:
-			pres = poll_pressure();
-			std::cout << "Pressure: " << pres << endl;
+			temperature = poll_temperature();
+			std::cout << "Temperature: " << pres << std::endl;
 			break;
 		default:
 			break;
