@@ -7,6 +7,7 @@
 #define PRESSURE_HPP
 
 #include "task.hpp"
+#include <wiringPi.h>
 
 class Pressure : public Task {
 	public: 

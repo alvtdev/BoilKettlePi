@@ -1,6 +1,8 @@
 #include "task.hpp"
 #include "pressure.hpp"
 #include <iostream>
+#include <wiringPi.h>
+#include "ads1115.h"
 
 Pressure::Pressure(int ms) : Task(ms) {
 	pres = 0;
@@ -34,11 +36,10 @@ int Pressure::tick_function() {
 			break;
 		case WAIT:
 			//test output
-			std::cout << "Current State: Wait" << std::endl;
 			break;
 		case GP:
-			std::cout << "Getting Pressure" << std::endl;
-			//TODO: Actually get pressure readings
+			pres = analogRead(2222);
+			std::cout << "Pressure: " << pres << endl;
 			break;
 		default:
 			break;

@@ -15,6 +15,8 @@
 #include "pressure.hpp"
 #include "timecount.hpp"
 #include "timer.h"
+#include <wiringPi.h>
+#include "ads1115.h"
 
 int main(void) {
 	extern int timer_flag;
@@ -33,8 +35,10 @@ int main(void) {
 	 * T->add_task(new CalcGrav(period, &p)) ; 
 	 */
 
+	//initialize adc
+	ads1115Setup(2222, 0x48);
 
-	T->add_task(new Ping(1000));
+	//T->add_task(new Ping(1000));
 	//T->add_task(new timecount(1000)); 
 	T->add_task(new Heater(500));
 	T->add_task(new Pump(3000));
