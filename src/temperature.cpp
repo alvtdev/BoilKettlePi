@@ -5,7 +5,8 @@
 #include "ads1115.h"
 
 Temperature::Temperature(int ms) : Task(ms) {
-	pres = 0;
+	state = INIT;
+	temperature = 0;
 }
 
 double Temperature::get_temperature() {
@@ -15,6 +16,8 @@ double Temperature::get_temperature() {
 double Temperature::poll_temperature() {
 	double ttemp = analogRead(2222);
 	//TODO: perform conversion from voltage reading to temperature value
+	ttemp = (((ttemp*4.098)/32767.0) - 0.5)*100.0; // temperature in celsius
+	ttemp = ttemp*(9.0/5.0) + 32.0;				// convert celsius to fahrenheit
 	return ttemp;
 }
 
@@ -26,9 +29,9 @@ int Temperature::tick_function() {
 			state = WAIT;
 			break;
 		case WAIT:
-			state = GP;
+			state = GT;
 			break;
-		case GP:
+		case GT:
 			state = WAIT;
 			break;
 		default:
@@ -43,9 +46,9 @@ int Temperature::tick_function() {
 		case WAIT:
 			//test output
 			break;
-		case GP:
+		case GT:
 			temperature = poll_temperature();
-			std::cout << "Temperature: " << pres << std::endl;
+			std::cout << "Temperature: " << temperature << endl;
 			break;
 		default:
 			break;

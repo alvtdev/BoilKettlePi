@@ -5,6 +5,7 @@
 #include "ads1115.h"
 
 Pressure::Pressure(int ms) : Task(ms) {
+	state = INIT;
 	pres = 0;
 }
 

@@ -17,7 +17,7 @@ class Temperature : public Task {
 
 	private:
 		enum States {INIT, WAIT, GT} state; //GT = get temperature
-		double temperature; //stores pressure value from reading
+		double temperature; //stores temperature value from reading
 		double poll_temperature();
 
 		virtual int tick_function();
