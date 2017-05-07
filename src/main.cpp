@@ -13,6 +13,7 @@
 #include "heater.hpp"
 #include "pump.hpp"
 #include "pressure.hpp"
+#include "sonar.hpp"
 #include "timecount.hpp"
 #include "temperature.hpp"
 #include "timer.h"
@@ -48,6 +49,7 @@ int main(void) {
 	T->add_task(p);
 //	T->add_task(new Pressure(1000));
 	T->add_task(new Temperature(1000));
+	T->add_task(new Sonar(1000));
 
 
 	if(timer_init(T->get_period_ms()))
