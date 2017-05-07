@@ -11,17 +11,19 @@
 
 #include "task.hpp"
 #include "pressure.hpp"
+#include "sonar.hpp"
 
 //TODO: modify class to include depth SM in constructor and as private member
 class Calcgrav : public Task {
 
 	public:
-		Calcgrav(int ms, Pressure* pres);
+		Calcgrav(int ms, Pressure* pres, Sonar* s);
 		double get_specGravBegin();
 		double get_specGravEnd();
 
 	private:
 		Pressure* pres;
+		Sonar* s;
 		//other class pointers needed: depth
 		double specGravBegin;
 		double specGravEnd;

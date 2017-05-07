@@ -14,9 +14,11 @@ double Pressure::get_pressure() {
 }
 
 double Pressure::poll_pressure() {
-	double ptemp = analogRead(2222);
-	//TODO: perform conversion from voltage reading to pressure value
-	return ptemp;
+	double ptemp = analogRead(222);
+	//perform conversion from voltage reading to pressure value
+	double pvol = (ptemp*5.0)/1024.0; // convert to voltage
+	double ppres = (3.0 * (pvol - 0.47)) * 1000000.0; //convert to voltage in pascals
+	return ppres;
 }
 
 int Pressure::tick_function() {

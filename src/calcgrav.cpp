@@ -9,6 +9,7 @@
 #include "task.hpp"
 #include "ping.hpp"
 #include "calcgrav.hpp"
+#include "sonar.hpp"
 #include <iostream>
 
 //TODO: modify constructor to include depth(sonar) SM 
@@ -17,8 +18,9 @@
 //			proper transitions between WAIT and GRAV_BEGIN/END
 //				^do this after implementing timing
 
-Calcgrav::Calcgrav(int ms, Pressure* pres) : Task(ms) {
+Calcgrav::Calcgrav(int ms, Pressure* pres, Sonar* s) : Task(ms) {
 	this->pres = pres; 
+	this->s = s;
 	specGravBegin = 0;
 	specGravEnd = 0;
 }
@@ -32,10 +34,11 @@ double Calcgrav::get_specGravEnd() {
 }
 
 double Calcgrav::calc_specific_gravity() {
-	double g = 9.81; // m per s^2
-	double p = pres->get_pressure(); 
-	double h = 0; 
-
+	double g = 9.81; 									// m per s^2
+	double p = pres->get_pressure();  //pressure in pascals
+	double h = s->get_distance();		  //height in cm 
+	h = h*0.01;											  //convert height to meters
+	double d = p/(g*h); 
 	return p/(g*h);
 }
 
@@ -71,6 +74,7 @@ int Calcgrav::tick_function() {
 			break;
 		case GRAV_BEGIN:
 			specGravBegin = calc_specific_gravity();
+			std::cout << "Density of fluid = " << specGravBegin << std::endl << std::endl;
 			break;
 		case GRAV_END:
 			specGravEnd = calc_specific_gravity();
