@@ -74,7 +74,7 @@ int Calcgrav::tick_function() {
 			break;
 		case GRAV_BEGIN:
 			specGravBegin = calc_specific_gravity();
-			std::cout << "Density of fluid = " << specGravBegin << std::endl << std::endl;
+			std::cout << "Density of fluid = " << specGravBegin << " g/cm^3" << std::endl << std::endl;
 			break;
 		case GRAV_END:
 			specGravEnd = calc_specific_gravity();
