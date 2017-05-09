@@ -14,11 +14,11 @@ double Pressure::get_pressure() {
 }
 
 double Pressure::poll_pressure() {
-	double ptemp = analogRead(222);
+	double ptemp = analogRead(2223);
 	//perform conversion from voltage reading to pressure value
-	double pvol = (ptemp*5.0)/1024.0; // convert to voltage
-	double ppres = (3.0 * (pvol - 0.47)) * 1000000.0; //convert to voltage in pascals
-	return ppres;
+	//double pvol = (ptemp*5.0)/1024.0; // convert to voltage
+//	double ppres = (3.0 * (pvol - 0.47)) * 1000000.0; //convert to voltage in pascals
+	return ptemp;
 }
 
 int Pressure::tick_function() {
@@ -48,7 +48,7 @@ int Pressure::tick_function() {
 			break;
 		case GP:
 			pres = poll_pressure();
-			std::cout << "Pressure: " << pres << endl;
+			std::cout << "Pressure: " << pres << " Pa" << std::endl;
 			break;
 		default:
 			break;
