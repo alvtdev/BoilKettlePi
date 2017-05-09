@@ -45,20 +45,20 @@ int main(void) {
 	//T->add_task(new timecount(1000)); 
 
 	//T->add_task(new Temperature(1000));
-	Temperature* t = new Temperature(1000);
+	Temperature* t = new Temperature(500);
 	T->add_task(t); 
 
 	//T->add_task(new Pressure(1000));
-	Pressure* p = new Pressure(1000);
+	Pressure* p = new Pressure(500);
 	T->add_task(p);
 	
 	//T->add_task(new Sonar(1000));
-	Sonar* s = new Sonar(1000);
+	Sonar* s = new Sonar(500);
 	T->add_task(s);
 
-	T->add_task(new Calcgrav(1000, p, s));
+	T->add_task(new Calcgrav(500, p, s));
 
-	T->add_task(new Heater(500, t));
+	T->add_task(new Heater(250, t));
 
 	if(timer_init(T->get_period_ms()))
 		return 1;

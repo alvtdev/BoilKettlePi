@@ -37,7 +37,7 @@ double Calcgrav::calc_specific_gravity() {
 	double g = 9.81; 									// m per s^2
 	double p = pres->get_pressure();  //pressure in pascals
 	double h = s->get_distance();		  //height in cm 
-	h = h*0.01;											  //convert height to meters
+	//h = h*0.01;											  //convert height to meters
 	double d = p/(g*h); 
 	return p/(g*h);
 }
