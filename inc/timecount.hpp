@@ -13,10 +13,19 @@
 class timecount : public Task {
 	public:
 		timecount(int ms);
-		int get_currtime();
+
+		void start_timer();
+		void stop_timer();
+
+		int get_hours();
+		int get_minutes();
+		int get_seconds();
+
 	private:
 		enum States { INIT, OFF, ON } state;
-		int currtime;
+		int hours;
+		int minutes;
+		int seconds;
 
 		virtual int tick_function();
 };

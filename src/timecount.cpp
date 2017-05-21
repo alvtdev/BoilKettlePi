@@ -2,14 +2,34 @@
 #include "timecount.hpp"
 #include <iostream>
 
-timecount::timecount(int ms) : Task(ms) {
-	currtime = 0;
+timecount::timecount(int ms) : Task(1000) {
+	state = INIT;
+	hours = 0;
+	minutes = 0;
+	seconds = -1;
 }
 
-int timecount::get_currtime() { 
-	return currtime;
+void timecount::start_timer() {
+	hours = 0;
+	minutes = 0;
+	seconds = 0;
 }
 
+void timecount::stop_timer() {
+	seconds = -1;
+}
+
+int timecount::get_hours() { 
+	return hours;
+}
+
+int timecount::get_minutes() { 
+	return minutes;
+}
+
+int timecount::get_seconds() { 
+	return seconds;
+}
 int timecount::tick_function() {
 	
 	/* State transitions */
@@ -18,10 +38,20 @@ int timecount::tick_function() {
 			state = OFF;
 			break;
 		case OFF:
-			state = ON;
+			if (seconds == -1) {
+				state = OFF;
+			}
+			else {
+				state = ON;
+			}
 			break;
 		case ON:
-			state = OFF;
+			if (seconds != -1) {
+				state = ON;
+			}
+			else {
+				state = OFF;
+			}
 			break;
 		default:
 			state = INIT;
@@ -31,12 +61,18 @@ int timecount::tick_function() {
 	/* State actions */
 	switch(state) {
 		case INIT:
-			currtime = 0;
 			break;
 		case OFF:
 			break;
 		case ON:
-			std::cout << currtime++ << std::endl;
+			std::cout << seconds++ << std::endl;
+			//seconds++;
+			if ((seconds % 60) == 0) {
+				minutes++;
+			}
+			if ((minutes % 60) == 0) {
+				hours++;
+			}
 			break;
 		default:
 			break;

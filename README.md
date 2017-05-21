@@ -1,4 +1,4 @@
-# MashberryPi
+# BoilKettlePi
 
 Automated boil kettle controller on the RaspberryPi
 

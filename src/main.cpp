@@ -42,7 +42,8 @@ int main(void) {
 	ads1115Setup(2222, 0x48);
 
 	//T->add_task(new Ping(1000));
-	//T->add_task(new timecount(1000)); 
+	timecount* time = new timecount(1000); 
+	T->add_task(time); 
 
 	//T->add_task(new Temperature(1000));
 	Temperature* t = new Temperature(500);
@@ -58,7 +59,8 @@ int main(void) {
 
 	T->add_task(new Calcgrav(500, p, s));
 
-	T->add_task(new Heater(250, t));
+	T->add_task(new Heater(250, t, time));
+
 
 	if(timer_init(T->get_period_ms()))
 		return 1;
