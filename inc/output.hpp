@@ -38,6 +38,7 @@ class Output : public Task {
 
 		void poll_Data();
 		void output_Data();
+		void output_to_file();
 
 		virtual int tick_function();
 };

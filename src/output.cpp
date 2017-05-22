@@ -9,6 +9,7 @@
 #include "task.hpp"
 #include "output.hpp"
 #include <iostream>
+#include <fstream>
 
 Output::Output(int ms, Temperature* t, Pressure* p, Sonar* s, 
 	Calcgrav* cg, Heater* h) : Task(ms) {
@@ -30,13 +31,13 @@ void Output::poll_Data() {
 
 void Output::output_Data() {
 	if (timeLeft > 0) {
-		std::cout << "Time Left: " << timeLeft << " s" << std::endl;
+		std::cout << "Boil Time Left: " << timeLeft << " s" << std::endl;
 	}
 	else if (timeLeft == 0) {
 		std::cout << "Boil Finished." << std::endl;
 	} 
 	else if (timeLeft < 0) {
-		// Do nothing 
+		//std::cout << "Boil Status: Waiting to start." << std::endl;
 	}
 	std::cout << "Temperature: " << temperature << " F" << std::endl;
 	std::cout << "Pressure: " << pressure << " Pa" << std::endl;
@@ -44,6 +45,28 @@ void Output::output_Data() {
 	std::cout << "Density: " << specGravBegin << " g/cm^3" << std::endl;
 	std::cout << std::endl;
 } 
+
+void Output::output_to_file() {
+	ofstream outFile("output.txt");
+	if (outFile.is_open()) {
+		if (timeLeft > 0) {
+			outFile << "Boil Time Left: " << timeLeft << " s \n";
+		}
+		else if (timeLeft == 0) {
+			outFile << "Boil Finished \n";
+		} 
+		else if (timeLeft < 0) {
+			outFile << "Boil Status: Waiting to start.\n";
+		}
+		outFile << "Temperature: " << temperature << " F \n";
+		outFile << "Pressure: " << pressure << " Pa \n";
+		outFile << "Distance: " << dist << " cm \n";
+		outFile << "Density: " << specGravBegin << " g/cm^3 \n";
+	}
+	else {
+		std::cout << "Error opening output.txt" << std::endl;
+	}
+}
 
 int Output::tick_function() {
 
@@ -79,6 +102,7 @@ int Output::tick_function() {
 			break;
 		case OUT:
 			output_Data();
+			output_to_file();
 			break;
 		default:
 			break;
