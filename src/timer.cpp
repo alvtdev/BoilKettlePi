@@ -1,36 +1,36 @@
 #include "task.hpp"
-#include "timecount.hpp"
+#include "timer.hpp"
 #include <iostream>
 
-timecount::timecount(int ms) : Task(1000) {
+Timer::Timer(int ms) : Task(1000) {
 	state = INIT;
 	hours = 0;
 	minutes = 0;
 	seconds = -1;
 }
 
-void timecount::start_timer() {
+void Timer::start_timer() {
 	hours = 0;
 	minutes = 0;
 	seconds = 0;
 }
 
-void timecount::stop_timer() {
+void Timer::stop_timer() {
 	seconds = -1;
 }
 
-int timecount::get_hours() { 
+int Timer::get_hours() { 
 	return hours;
 }
 
-int timecount::get_minutes() { 
+int Timer::get_minutes() { 
 	return minutes;
 }
 
-int timecount::get_seconds() { 
+int Timer::get_seconds() { 
 	return seconds;
 }
-int timecount::tick_function() {
+int Timer::tick_function() {
 	
 	/* State transitions */
 	switch(state) {
@@ -65,8 +65,8 @@ int timecount::tick_function() {
 		case OFF:
 			break;
 		case ON:
-			std::cout << seconds++ << std::endl;
-			//seconds++;
+			//std::cout << seconds++ << std::endl;
+			seconds++;
 			if ((seconds % 60) == 0) {
 				minutes++;
 			}

@@ -15,7 +15,7 @@
 #include "pressure.hpp"
 #include "sonar.hpp"
 #include "calcgrav.hpp"
-#include "timecount.hpp"
+#include "timer.hpp"
 #include "temperature.hpp"
 #include "timer.h"
 #include <wiringPi.h>
@@ -42,7 +42,7 @@ int main(void) {
 	ads1115Setup(2222, 0x48);
 
 	//T->add_task(new Ping(1000));
-	timecount* time = new timecount(1000); 
+	Timer* time = new Timer(1000); 
 	T->add_task(time); 
 
 	//T->add_task(new Temperature(1000));

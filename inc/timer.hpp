@@ -1,18 +1,18 @@
 /******************************************************************************
  * Author: Alvin Thai
  * Date  : 4/27/2017
- * timecout is a state machine that constantly counts upward upon starting
+ * Timer is a state machine that constantly counts upward upon starting
  * execution of a task
  *****************************************************************************/
 
-#ifndef TIMECOUNT_HPP
-#define TIMECOUNT_HPP
+#ifndef TIMER_HPP
+#define TIMER_HPP
 
 #include "task.hpp"
 
-class timecount : public Task {
+class Timer : public Task {
 	public:
-		timecount(int ms);
+		Timer(int ms);
 
 		void start_timer();
 		void stop_timer();

@@ -7,13 +7,13 @@
 #define HEATER_HPP
 
 #include "task.hpp"
-#include "timecount.hpp"
+#include "timer.hpp"
 #include "temperature.hpp"
 #include <wiringPi.h>
 
 class Heater : public Task {
 	public:
-		Heater(int ms, Temperature* t, timecount* time);
+		Heater(int ms, Temperature* t, Timer* time);
 
 	private:
 		enum States { INIT, OFF, HEAT, BOIL, MAINTAIN } state;
@@ -21,8 +21,9 @@ class Heater : public Task {
 		int boilTimeSeconds;
 		int timerSeconds;
 		Temperature* t;
-		timecount* time;
+		Timer* time;
 		int heatflag;
+		int printcount; //currently used to suppress "time left" outputs
 
 		virtual int tick_function();
 };

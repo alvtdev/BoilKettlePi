@@ -9,7 +9,7 @@
 #include <wiringPi.h>
 #include <iostream>
 
-Heater::Heater(int ms, Temperature* t, timecount* time) : Task(ms) {
+Heater::Heater(int ms, Temperature* t, Timer* time) : Task(ms) {
 	pinMode(6, OUTPUT);
 	digitalWrite(6, LOW);
 	state = INIT;
@@ -19,6 +19,7 @@ Heater::Heater(int ms, Temperature* t, timecount* time) : Task(ms) {
 	heatflag = -1;
 	boilTimeSeconds = 30;
 	timerSeconds = 0;
+	printcount = 0;
 }
 
 int Heater::tick_function() {
@@ -40,12 +41,18 @@ int Heater::tick_function() {
 				state = BOIL;
 				std::cout << "state = BOIL" << std::endl;
 			}
+			else {
+				state = HEAT;
+			}
 			break;
 		case BOIL:
 			if (boilTimeSeconds - timerSeconds <= 0) { 
 				time->stop_timer();
 				std::cout << "state = MAINTAIN" << std::endl;
 				state = MAINTAIN;
+			}
+			else {
+				state = BOIL;
 			}
 			break;
 		case MAINTAIN:
@@ -69,15 +76,20 @@ int Heater::tick_function() {
 			break;
 		case BOIL:
 			timerSeconds = time->get_seconds();
-			std::cout << "Time Left: " << (boilTimeSeconds - timerSeconds) << std::endl;
+			printcount++; //used to suppress output
+			if (printcount >= 4) {
+				std::cout << "Time Left: " << (boilTimeSeconds - timerSeconds) << std::endl;
+				printcount = 0;
+			}
+			break;
 		case MAINTAIN:
 			if (temp <= 75.0) { 
-				std::cout << "Heater: ON" << std::endl;
+				//std::cout << "Heater: ON" << std::endl;
 				digitalWrite(6, HIGH);
 				temp = t->get_temperature();
 			}
 			else {
-				std::cout << "Heater: OFF" << std::endl;
+				//std::cout << "Heater: OFF" << std::endl;
 				digitalWrite(6, LOW);
 				temp = t->get_temperature();
 			}
