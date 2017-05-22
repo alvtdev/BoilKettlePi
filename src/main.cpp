@@ -1,5 +1,5 @@
 /******************************************************************************
- * Author: Nicholas Pelham
+ * Author: Nicholas Pelham, modified by Alvin Thai
  * Date  : 4/26/2017
  *
  *   This main file is meant to be as minimal as possible. All state machine 
@@ -42,14 +42,6 @@ int main(void) {
 	//initialize adc
 	ads1115Setup(2222, 0x48);
 
-	//T->add_task(new Ping(1000));
-	Timer* time = new Timer(1000); 
-	T->add_task(time); 
-
-	//T->add_task(new Temperature(1000));
-	Temperature* t = new Temperature(500);
-	T->add_task(t); 
-
 	//T->add_task(new Pressure(1000));
 	Pressure* p = new Pressure(500);
 	T->add_task(p);
@@ -62,11 +54,20 @@ int main(void) {
 	Calcgrav* cg = new Calcgrav(500, p, s);
 	T->add_task(cg);
 
+	//T->add_task(new Ping(1000));
+	Timer* time = new Timer(1000); 
+	T->add_task(time); 
+
+	//T->add_task(new Temperature(1000));
+	Temperature* t = new Temperature(500);
+	T->add_task(t); 
+
 	//T->add_task(new Heater(250, t, time));
 	Heater* h = new Heater(250, t, time);
 	T->add_task(h);
 
-	Output* o = new Output(100, t, p, s, cg, h);
+
+	Output* o = new Output(50, t, p, s, cg, h);
 	T->add_task(o);
 
 

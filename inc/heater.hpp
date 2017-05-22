@@ -15,6 +15,8 @@ class Heater : public Task {
 	public:
 		Heater(int ms, Temperature* t, Timer* time);
 		int get_timeLeft_seconds();
+		int get_boilTime();
+		int get_timerSeconds();
 
 	private:
 		enum States { INIT, OFF, HEAT, BOIL, MAINTAIN } state;
@@ -26,7 +28,6 @@ class Heater : public Task {
 		Temperature* t;
 		Timer* time;
 		int heatflag;
-		int printcount; //currently used to suppress "time left" outputs
 
 		virtual int tick_function();
 };

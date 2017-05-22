@@ -20,7 +20,6 @@ Heater::Heater(int ms, Temperature* t, Timer* time) : Task(ms) {
 	boilTimeSeconds = 30;
 	timerSeconds = 0;
 	timeLeft = -1;
-	printcount = 0;
 }
 
 int Heater::get_timeLeft_seconds() {
@@ -32,8 +31,16 @@ int Heater::calc_timeLeft() {
 	return timeLeft;
 }
 
-int Heater::tick_function() {
+int Heater::get_boilTime() {
+	return boilTimeSeconds;
+} 
 
+int Heater::get_timerSeconds() {
+	return timerSeconds;
+}
+
+int Heater::tick_function() {
+	int temptime = 0;
 	/* State transitions */
 	switch(state) {
 		case INIT:
@@ -87,11 +94,12 @@ int Heater::tick_function() {
 			break;
 		case BOIL:
 			timerSeconds = time->get_seconds();
-			printcount++; //used to suppress output
-			if (printcount >= 4) {
-//				std::cout << "Time Left: " << (boilTimeSeconds - timerSeconds) << std::endl;
-				printcount = 0;
-			}
+			temptime = calc_timeLeft();
+			/*
+			std::cout << "Boil time: " << boilTimeSeconds << std::endl;
+			std::cout << "Timer: " << timerSeconds << std::endl;
+			std::cout << "Time Left: " << calc_timeLeft() << std::endl << std::endl;
+			*/
 			break;
 		case MAINTAIN:
 			if (temp <= 75.0) { 

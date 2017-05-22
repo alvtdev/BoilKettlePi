@@ -31,6 +31,10 @@ void Output::poll_Data() {
 
 void Output::output_Data() {
 	if (timeLeft > 0) {
+		/*
+		std::cout << "Total Boil Time: " << h->get_boilTime() << " s \n";
+		std::cout << "Timer Time: " << h->get_timerSeconds() << " s \n";
+		*/
 		std::cout << "Boil Time Left: " << timeLeft << " s" << std::endl;
 	}
 	else if (timeLeft == 0) {
@@ -76,7 +80,7 @@ int Output::tick_function() {
 			state = POLL;
 			break;
 		case POLL:
-			if (pollCount >= pollCountMax) {
+			if (pollCount >= pollCountMax-1) {
 				pollCount = 0;
 				state = OUT;
 			}
