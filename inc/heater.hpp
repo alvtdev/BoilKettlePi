@@ -14,12 +14,15 @@
 class Heater : public Task {
 	public:
 		Heater(int ms, Temperature* t, Timer* time);
+		int get_timeLeft_seconds();
 
 	private:
 		enum States { INIT, OFF, HEAT, BOIL, MAINTAIN } state;
+		int calc_timeLeft();
 		double temp;
 		int boilTimeSeconds;
 		int timerSeconds;
+		int timeLeft;
 		Temperature* t;
 		Timer* time;
 		int heatflag;

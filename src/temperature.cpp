@@ -48,7 +48,7 @@ int Temperature::tick_function() {
 			break;
 		case GT:
 			temperature = poll_temperature();
-			std::cout << "Temperature: " << temperature << " F" <<  endl;
+//			std::cout << "Temperature: " << temperature << " F" <<  endl;
 			break;
 		default:
 			break;

@@ -48,7 +48,7 @@ int Pressure::tick_function() {
 			break;
 		case GP:
 			pres = poll_pressure();
-			std::cout << "Pressure: " << pres << " Pa" << std::endl;
+//			std::cout << "Pressure: " << pres << " Pa" << std::endl;
 			break;
 		default:
 			break;

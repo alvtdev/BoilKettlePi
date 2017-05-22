@@ -80,7 +80,7 @@ int Sonar::tick_function() {
 			break;
 		case PING:
 			distCM = poll_distance();
-			std::cout << "Distance: " << distCM << " cm" << endl;
+//			std::cout << "Distance: " << distCM << " cm" << endl;
 			break;
 		default:
 			break;

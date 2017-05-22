@@ -15,6 +15,7 @@
 #include "pressure.hpp"
 #include "sonar.hpp"
 #include "calcgrav.hpp"
+#include "output.hpp"
 #include "timer.hpp"
 #include "temperature.hpp"
 #include "timer.h"
@@ -57,9 +58,16 @@ int main(void) {
 	Sonar* s = new Sonar(500);
 	T->add_task(s);
 
-	T->add_task(new Calcgrav(500, p, s));
+	//T->add_task(new Calcgrav(500, p, s));
+	Calcgrav* cg = new Calcgrav(500, p, s);
+	T->add_task(cg);
 
-	T->add_task(new Heater(250, t, time));
+	//T->add_task(new Heater(250, t, time));
+	Heater* h = new Heater(250, t, time);
+	T->add_task(h);
+
+	Output* o = new Output(100, t, p, s, cg, h);
+	T->add_task(o);
 
 
 	if(timer_init(T->get_period_ms()))
