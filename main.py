@@ -21,7 +21,7 @@ bkui.title("BoilKettlePi")
 #bkui_Mainframe.rowconfigure(0, weight=1)
 
 
-out1 = Message(bkui, text=bmsg)
+out1 = Message(bkui, text=bmsg, width = 10000)
 out1.pack(side=LEFT)
 printOutputs()
 
