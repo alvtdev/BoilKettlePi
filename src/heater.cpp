@@ -17,7 +17,9 @@ Heater::Heater(int ms, Temperature* t, Timer* time) : Task(ms) {
 	this->time = time;
 	temp = t->get_temperature();
 	heatflag = -1;
-	boilTimeSeconds = 30;
+	boilTimeHrs = 0;
+	boilTimeMins = 0;
+	boilTimeSeconds = 0;
 	timerSeconds = 0;
 	timeLeft = -1;
 }
@@ -39,6 +41,10 @@ int Heater::get_timerSeconds() {
 	return timerSeconds;
 }
 
+void Heater::init_boilTime(int hrs, int min, int sec) {
+	boilTimeSeconds = sec + 60*min + 360*hrs;
+	return;
+}
 int Heater::tick_function() {
 	int temptime = 0;
 	/* State transitions */
@@ -65,7 +71,7 @@ int Heater::tick_function() {
 		case BOIL:
 			if (calc_timeLeft() <= 0) { 
 				time->stop_timer();
-				timeLeft = -1;
+				timeLeft = -10;
 				std::cout << "state = MAINTAIN" << std::endl;
 				state = MAINTAIN;
 			}
@@ -85,6 +91,7 @@ int Heater::tick_function() {
 		case INIT:
 			break;
 		case OFF:
+			init_boilTime(0, 5, 30);
 			digitalWrite(6, LOW);
 			heatflag = 1;
 			break;

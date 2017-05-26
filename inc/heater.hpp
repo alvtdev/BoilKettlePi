@@ -21,7 +21,10 @@ class Heater : public Task {
 	private:
 		enum States { INIT, OFF, HEAT, BOIL, MAINTAIN } state;
 		int calc_timeLeft();
+		void init_boilTime(int hrs, int min, int sec); //helper function for testing hard-coded boiltimes
 		double temp;
+		int boilTimeHrs;
+		int boilTimeMins;
 		int boilTimeSeconds;
 		int timerSeconds;
 		int timeLeft;

@@ -27,16 +27,20 @@ class Output : public Task {
 		Heater* h;
 
 		enum States { INIT, POLL, OUT } state;
-		double temperature; 	//from temperature SM - get_Temp()
-		double pressure;			//from pressure SM		- get_Pressure()
-		double dist;					//from sonar SM				- get_Distance()
-		double specGravBegin; //from calcgrav SM		- get_specGravBegin()
-		int timeLeft;					//from Heater SM			- get_timeLeft_seconds()
+		double temperature; 		//from temperature SM - get_Temp()
+		double pressure;				//from pressure SM		- get_Pressure()
+		double dist;						//from sonar SM				- get_Distance()
+		double specGravBegin; 	//from calcgrav SM		- get_specGravBegin()
+		int timeLeft;	//from Heater SM			- get_timeLeft_seconds()
+		int outputTimeHours;
+		int outputTimeMinutes;
+		int outputTimeSeconds;
 
 		int pollCount; 				//used to suppress output to once per second 
 		int pollCountMax;			//or as close as once per second as possible.
 
 		void poll_Data();
+		void calc_outputTimes();
 		void output_Data();
 		void output_to_file();
 

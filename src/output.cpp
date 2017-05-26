@@ -19,6 +19,9 @@ Output::Output(int ms, Temperature* t, Pressure* p, Sonar* s,
 	this->cg = cg;
 	this->h = h;
 	pollCountMax = (1000/ms);
+	outputTimeHours = 0;
+	outputTimeMinutes = 0;
+	outputTimeSeconds = 0;
 }
 
 void Output::poll_Data() {
@@ -29,16 +32,39 @@ void Output::poll_Data() {
 	timeLeft = h->get_timeLeft_seconds();
 }
 
+void Output::calc_outputTimes() {
+	unsigned int tempTimeLeft = h->get_timeLeft_seconds();
+
+	if (tempTimeLeft > 360) {
+		outputTimeHours = (tempTimeLeft / 360);
+		tempTimeLeft -= (outputTimeHours * 360);
+	}
+	else {
+		outputTimeHours = 0;
+	}
+
+	if (tempTimeLeft > 60) {
+		outputTimeMinutes = (tempTimeLeft / 60);
+		tempTimeLeft -= (outputTimeMinutes * 60);
+	}
+	else {
+		outputTimeMinutes = 0;
+	}
+
+	outputTimeSeconds = tempTimeLeft;
+}
+
 void Output::output_Data() {
 	if (timeLeft > 0) {
 		/*
 		std::cout << "Total Boil Time: " << h->get_boilTime() << " s \n";
 		std::cout << "Timer Time: " << h->get_timerSeconds() << " s \n";
 		*/
-		std::cout << "Boil Time Left: " << timeLeft << " s" << std::endl;
+		std::cout << "Boil Time Left: " << outputTimeHours << " hrs, " 
+			<< outputTimeMinutes << " min, " << outputTimeSeconds << " s" << std::endl;
 	}
 	else if (timeLeft == 0) {
-		std::cout << "Boil Finished." << std::endl;
+		std::cout << "Boil Status: Finished." << std::endl;
 	} 
 	else if (timeLeft < 0) {
 		//std::cout << "Boil Status: Waiting to start." << std::endl;
@@ -54,13 +80,17 @@ void Output::output_to_file() {
 	ofstream outFile("output.txt");
 	if (outFile.is_open()) {
 		if (timeLeft > 0) {
-			outFile << "Boil Time Left: " << timeLeft << " s \n";
+			outFile << "Boil Time Left: " << outputTimeHours << " hrs, "  
+				<< outputTimeMinutes << " min, " << outputTimeSeconds << " s \n";
 		}
 		else if (timeLeft == 0) {
-			outFile << "Boil Finished \n";
+			outFile << "Boil Status: Finished \n";
 		} 
-		else if (timeLeft < 0) {
+		else if (timeLeft == -1) {
 			outFile << "Boil Status: Waiting to start.\n";
+		}
+		else if (timeLeft < -5) {
+			outFile << "Boil Status: Finished.\n";
 		}
 		outFile << "Temperature: " << temperature << " F \n";
 		outFile << "Pressure: " << pressure << " Pa \n";
@@ -105,6 +135,7 @@ int Output::tick_function() {
 			pollCount++;
 			break;
 		case OUT:
+			calc_outputTimes();
 			output_Data();
 			output_to_file();
 			break;
