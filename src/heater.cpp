@@ -42,7 +42,7 @@ int Heater::get_timerSeconds() {
 }
 
 void Heater::init_boilTime(int hrs, int min, int sec) {
-	boilTimeSeconds = sec + 60*min + 360*hrs;
+	boilTimeSeconds = sec + 60*min + 3600*hrs;
 	return;
 }
 int Heater::tick_function() {
@@ -91,7 +91,7 @@ int Heater::tick_function() {
 		case INIT:
 			break;
 		case OFF:
-			init_boilTime(0, 5, 30);
+			init_boilTime(1, 0, 10);
 			digitalWrite(6, LOW);
 			heatflag = 1;
 			break;

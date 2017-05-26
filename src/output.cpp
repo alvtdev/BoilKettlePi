@@ -34,10 +34,11 @@ void Output::poll_Data() {
 
 void Output::calc_outputTimes() {
 	unsigned int tempTimeLeft = h->get_timeLeft_seconds();
+	//std::cout << tempTimeLeft << std::endl;
 
-	if (tempTimeLeft > 360) {
-		outputTimeHours = (tempTimeLeft / 360);
-		tempTimeLeft -= (outputTimeHours * 360);
+	if (tempTimeLeft > 3600) {
+		outputTimeHours = (tempTimeLeft / 3600);
+		tempTimeLeft -= (outputTimeHours * 3600);
 	}
 	else {
 		outputTimeHours = 0;
