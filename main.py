@@ -24,7 +24,7 @@ def printOutputs():
     ftxt = open(outputFile, "r+")
     bmsg = ftxt.read()
     ftxt.close()
-    out1.configure(text=bmsg)
+    outmsg.configure(text=bmsg)
     afterid1 = bkui.after(1000, printOutputs)
 
 #Mash Tun Menu Functions 
@@ -125,19 +125,19 @@ menuMsg.grid(row=2, column=1)
 startBoil = Button(bk_page, text="Start Boil", command=goToOutPage)
 btsBK = Button(bk_page, text='Menu', command=goToMenuPage)
 exitBK = Button(bk_page, text='Exit', command=exitbk)
-out1 = Message(bk_page, text="BoilKettle Settings", width = 10000)
+bkSettings = Message(bk_page, text="BoilKettle Settings", width = 10000)
 
-out1.grid(row=2, column=1)
-btsBK.grid(row=3, column=0)
-startBoil.grid(row=3, column=1)
-exitBK.grid(row=3, column=2)
+bkSettings.grid(row=0, column=1)
+btsBK.grid(row=4, column=0)
+startBoil.grid(row=4, column=1)
+exitBK.grid(row=4, column=2)
 
 #output page
 exitOut = Button(out_page, text='Exit', command=exitbk)
 outmsg = Message(out_page, text=bmsg, width=10000)
 
 outmsg.grid(row=2, column=1)
-exitOut.grid(row=3, column=2)
+exitOut.grid(row=4, column=2)
 
 #MT PAGE
 mtSettings = Label(mt_page, text="Mash Tun Settings:")
