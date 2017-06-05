@@ -11,21 +11,21 @@ mTime = None
 mTemp1 = None
 mTemp2 = None 
 
-#PAGE NUMBER VAR
-#0 = menu page
-#1 = boil kettle page
-#2 = output page
-#3 = mash tun page
-#4 = MT info sent page
-pagenumber = 0;
+#boil time var
+bTotalTime = None
+bTime1 = None
+bTime2 = None
+bTime3 = None
+
 
 #Output functions
-def printOutputs():
+def getOutputs():
     ftxt = open(outputFile, "r+")
     bmsg = ftxt.read()
     ftxt.close()
     outmsg.configure(text=bmsg)
-    afterid1 = bkui.after(1000, printOutputs)
+    afterid1 = bkui.after(1000, getOutputs)
+    #print(afterid1)
 
 #Mash Tun Menu Functions 
 def getMashData():
@@ -42,31 +42,48 @@ def getMashData():
     file.write("Mash time: %s \n" % mTime)
     file.write("Mash temp1: %s \n" % mTemp1)
     file.write("Mash temp2: %s \n" % mTemp2)
+    #file.write("%s %s %s" % (mTime, mTemp1, mTemp2))
     file.close()
-    #print(mTime)
-    #print(mTemp1)
-    #print(mTemp2)
+
+#Boil Kettle Menu Functions
+def getBoilTimes():
+    global bTime1
+    global bTime2
+    global bTime3
+    global bTotalTime
+    bTime1 = bkTime1Entry.get()
+    bTime2 = bkTime2Entry.get()
+    bTime3 = bkTime3Entry.get()
+    bTotalTime = int(bTime1) + int(bTime2) + int(bTime3)
+    bTime1String.set(bTime1)
+    bTime2String.set(bTime2)
+    bTime3String.set(bTime3)
+    bTotalTimeString.set(bTotalTime)
+
+def startBoil():
+    #TODO: call C program with boil time as inputs
+    return
 
 #Page navigation helper functions
 def goToMenuPage():
-    pagenumber = 0
     menu_page.tkraise()
 
 def goToBkPage():
-    pagenumber = 1
     bk_page.tkraise()
 
+def goToBkConfPage():
+    getBoilTimes()
+    bkConf_page.tkraise()
+
 def goToOutPage():
-    pagenumber = 2
-    printOutputs()
+    startBoil()
+    getOutputs()
     out_page.tkraise()
 
 def goToMtPage():
-    pagenumber = 3
     mt_page.tkraise()
 
 def goToMtSentPage():
-    pagenumber = 4
     getMashData()
     mtSent_page.tkraise()
 
@@ -83,76 +100,140 @@ bkui.columnconfigure(1, weight=1)
 bkui.columnconfigure(2, weight=1) 
 bkui.columnconfigure(3, weight=1)
 bkui.columnconfigure(4, weight=1)
+bkui.columnconfigure(5, weight=1)
 bkui.rowconfigure(0, weight=1)
 bkui.rowconfigure(1, weight=1)
 bkui.rowconfigure(2, weight=1)
 bkui.rowconfigure(3, weight=1)
 bkui.rowconfigure(4, weight=1)
+bkui.rowconfigure(5, weight=1)
 
 #declare pages
 menu_page = Frame(bkui)
 bk_page = Frame(bkui) 
+bkConf_page = Frame(bkui)
 mt_page = Frame(bkui)
 out_page = Frame(bkui)
 mtSent_page = Frame(bkui)
 
 #init config for all pages
-for frame in (menu_page, bk_page, out_page, mt_page, mtSent_page):
+for frame in (menu_page, bk_page, bkConf_page, out_page, mt_page, mtSent_page):
     frame.grid(row=0, column=0, sticky=(N, S, E, W))
     frame.columnconfigure(0, weight=1)
     frame.columnconfigure(1, weight=1)
     frame.columnconfigure(2, weight=1) 
     frame.columnconfigure(3, weight=1)
     frame.columnconfigure(4, weight=1)
+    frame.columnconfigure(5, weight=1)
     frame.rowconfigure(0, weight=1)
     frame.rowconfigure(1, weight=1)
     frame.rowconfigure(2, weight=1)
     frame.rowconfigure(3, weight=1)
     frame.rowconfigure(4, weight=1)
+    frame.rowconfigure(5, weight=1)
 
-#MENU PAGE
+#MENU PAGE - (menu_page)
 mtConfig = Button(menu_page, text="MashTun Settings", command=goToMtPage)
 btConfig = Button(menu_page, text="BoilKettle Settings", command=goToBkPage)
 exitMenu = Button(menu_page, text='Exit', command=exitbk)
 menuMsg = Message(menu_page, text="Welcome to BoilKettlePi", width=10000)
 
-mtConfig.grid(row=3, column=0)
-btConfig.grid(row=3, column=1)
-exitMenu.grid(row=3, column=2)
-menuMsg.grid(row=2, column=1)
+mtConfig.grid(row=5, column=0)
+btConfig.grid(row=5, column=1)
+exitMenu.grid(row=5, column=2)
+menuMsg.grid(row=0, column=1)
 
-#BOIL KETTLE PAGE
-startBoil = Button(bk_page, text="Start Boil", command=goToOutPage)
+#BOIL KETTLE PAGE - (bk_page)
+#prompts and entries
+bkSettings = Message(bk_page, text="BoilKettle Settings", width = 10000)
+bkTime1 = Label(bk_page, text="Initial Boil:")
+bkTime1Entry = Entry(bk_page)
+bkTime1Units = Label(bk_page, text="minutes")
+bkTime2 = Label(bk_page, text="1st reminder:")
+bkTime2Entry = Entry(bk_page)
+bkTime2Units = Label(bk_page, text="minutes")
+bkTime3 = Label(bk_page, text="2nd reminder:")
+bkTime3Entry = Entry(bk_page)
+bkTime3Units = Label(bk_page, text="minutes")
+#navigation buttons
+confirmBK = Button(bk_page, text="Confirm", command=goToBkConfPage)
 btsBK = Button(bk_page, text='Menu', command=goToMenuPage)
 exitBK = Button(bk_page, text='Exit', command=exitbk)
-bkSettings = Message(bk_page, text="BoilKettle Settings", width = 10000)
 
 bkSettings.grid(row=0, column=1)
-btsBK.grid(row=4, column=0)
-startBoil.grid(row=4, column=1)
-exitBK.grid(row=4, column=2)
+bkTime1.grid(row=1, column=0)
+bkTime1Entry.grid(row=1, column=1)
+bkTime1Units.grid(row=1, column=2)
+bkTime2.grid(row=2, column=0)
+bkTime2Entry.grid(row=2, column=1)
+bkTime2Units.grid(row=2, column=2)
+bkTime3.grid(row=3, column=0)
+bkTime3Entry.grid(row=3, column=1)
+bkTime3Units.grid(row=3, column=2)
+btsBK.grid(row=5, column=0)
+confirmBK.grid(row=5, column=1)
+exitBK.grid(row=5, column=2)
 
-#output page
+#BOIL KETTLE CONFIRMATION PAGE
+bTime1String = StringVar()
+bTime2String = StringVar()
+bTime3String = StringVar()
+bTotalTimeString = StringVar()
+bkConfSettings = Message(bkConf_page, text="Confirm BoilKettle Settings", width = 10000)
+bkConfTime1 = Label(bkConf_page, text="Initial Boil:")
+bkConfTime1Entry = Label(bkConf_page, textvariable=bTime1String)
+bkConfTime1Units = Label(bkConf_page, text="minutes")
+bkConfTime2 = Label(bkConf_page, text="1st reminder:")
+bkConfTime2Entry = Label(bkConf_page, textvariable=bTime2String)
+bkConfTime2Units = Label(bkConf_page, text="minutes")
+bkConfTime3 = Label(bkConf_page, text="2nd reminder:")
+bkConfTime3Entry = Label(bkConf_page, textvariable=bTime3String)
+bkConfTime3Units = Label(bkConf_page, text="minutes")
+bkConfTotalTime = Label(bkConf_page, text="Total Boil Time:")
+bkConfTotalTimeEntry = Label(bkConf_page, textvariable=bTotalTimeString)
+bkConfTotalTimeUnits = Label(bkConf_page, text="minutes") 
+#navigation buttons
+menuBKConf = Button(bkConf_page, text="Back", command=goToBkPage)
+startBKConf = Button(bkConf_page, text="Start Boil", command=goToOutPage)
+exitBKConf = Button(bkConf_page, text='Exit', command=exitbk)
+
+bkConfSettings.grid(row=0, column=1)
+bkConfTime1.grid(row=1, column=0)
+bkConfTime1Entry.grid(row=1, column=1)
+bkConfTime1Units.grid(row=1, column=2)
+bkConfTime2.grid(row=2, column=0)
+bkConfTime2Entry.grid(row=2, column=1)
+bkConfTime2Units.grid(row=2, column=2)
+bkConfTime3.grid(row=3, column=0)
+bkConfTime3Entry.grid(row=3, column=1)
+bkConfTime3Units.grid(row=3, column=2)
+bkConfTotalTime.grid(row=4, column=0)
+bkConfTotalTimeEntry.grid(row=4, column=1)
+bkConfTotalTimeUnits.grid(row=4, column=2)
+menuBKConf.grid(row=5, column=0)
+startBKConf.grid(row=5, column=1)
+exitBKConf.grid(row=5, column=2)
+
+#output page - (out_page)
 exitOut = Button(out_page, text='Exit', command=exitbk)
 outmsg = Message(out_page, text=bmsg, width=10000)
 
 outmsg.grid(row=2, column=1)
-exitOut.grid(row=4, column=2)
+exitOut.grid(row=5, column=2)
 
-#MT PAGE
+#MT PAGE - (mt_page)
+#prompts and entries
 mtSettings = Label(mt_page, text="Mash Tun Settings:")
 mashTime = Label(mt_page, text="Mash Time:")
 mashTimeEntry = Entry(mt_page)
 mashTimeUnits = Label(mt_page, text="minutes")
-#mTime = mashTimeEntry.get()
 mashTemp1 = Label(mt_page, text="Mash Temperature:")
 mashTemp1Entry = Entry(mt_page)
 mashTemp1Units = Label(mt_page, text="\xb0F")
-#mTemp1 = mashTemp1Entry.get()
 mashTemp2 = Label(mt_page, text="Mash Temperature:")
 mashTemp2Entry = Entry(mt_page)
 mashTemp2Units = Label(mt_page, text="\xb0F")
-#mTemp2 = mashTemp2Entry.get()
+#navigation buttons
 btsMT = Button(mt_page, text='Menu', command=goToMenuPage)
 sendMTData = Button(mt_page, text="Send to Mash Tun", command=goToMtSentPage)
 exitMT = Button(mt_page, text='Exit', command=exitbk)
@@ -167,11 +248,11 @@ mashTemp1Units.grid(row=2, column=2)
 mashTemp2.grid(row=3, column=0)
 mashTemp2Entry.grid(row=3, column=1)
 mashTemp2Units.grid(row=3, column=2)
-btsMT.grid(row=4, column=0)
-sendMTData.grid(row=4, column=1)
-exitMT.grid(row=4, column=2)
+btsMT.grid(row=5, column=0)
+sendMTData.grid(row=5, column=1)
+exitMT.grid(row=5, column=2)
 
-#MT SENT PAGE
+#MT SENT PAGE - (mtSent_page)
 #stringvars to store display user input
 mTimeString = StringVar()
 mTemp1String = StringVar()
@@ -198,7 +279,7 @@ mtSentTemp1Units.grid(row=2, column=2)
 mtSentTemp2.grid(row=3, column=0)
 mtSentTemp2Entry.grid(row=3, column=1)
 mtSentTemp2Units.grid(row=3, column=2)
-btsMTSent.grid(row=4, column=1)
+btsMTSent.grid(row=5, column=1)
 
 
 menu_page.tkraise()
