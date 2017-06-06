@@ -1,4 +1,6 @@
 import time
+import os
+import subprocess
 from tkinter import *
 
 outputFile = "output.txt"
@@ -17,6 +19,9 @@ bTime1 = None
 bTime2 = None
 bTime3 = None
 
+#process var
+global proc
+proc = None
 
 #Output functions
 def getOutputs():
@@ -54,7 +59,12 @@ def getBoilTimes():
     bTime1 = bkTime1Entry.get()
     bTime2 = bkTime2Entry.get()
     bTime3 = bkTime3Entry.get()
+    #print(bTime1)
+    #print(bTime2)
+    #print(bTime3)
+    
     bTotalTime = int(bTime1) + int(bTime2) + int(bTime3)
+
     bTime1String.set(bTime1)
     bTime2String.set(bTime2)
     bTime3String.set(bTime3)
@@ -62,6 +72,10 @@ def getBoilTimes():
 
 def startBoil():
     #TODO: call C program with boil time as inputs
+    #proc = os.system("sudo ./BoilKettlePi " + str(bTotalTime) + ' &')
+    global proc
+    proc = subprocess.Popen(['sudo', './BoilKettlePi', str(bTotalTime)])
+    pid = proc.pid
     return
 
 #Page navigation helper functions
@@ -88,7 +102,7 @@ def goToMtSentPage():
     mtSent_page.tkraise()
 
 def exitbk():
-    bkui.quit()
+    proc.terminate()
     exit(0)
 
 
