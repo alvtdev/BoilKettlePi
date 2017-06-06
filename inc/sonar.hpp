@@ -27,6 +27,7 @@ class Sonar : public Task {
 
 		//functions
 		double poll_distance();
+		double calc_distance(volatile long travelTimeUsec);
 		virtual int tick_function();
 };
 

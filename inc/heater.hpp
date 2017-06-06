@@ -13,7 +13,7 @@
 
 class Heater : public Task {
 	public:
-		Heater(int ms, Temperature* t, Timer* time);
+		Heater(int ms, Temperature* t, Timer* time, int minutes);
 		int get_timeLeft_seconds();
 		int get_boilTime();
 		int get_timerSeconds();

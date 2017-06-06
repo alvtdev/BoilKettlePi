@@ -9,7 +9,7 @@
 #include <wiringPi.h>
 #include <iostream>
 
-Heater::Heater(int ms, Temperature* t, Timer* time) : Task(ms) {
+Heater::Heater(int ms, Temperature* t, Timer* time, int minutes) : Task(ms) {
 	pinMode(6, OUTPUT);
 	digitalWrite(6, LOW);
 	state = INIT;
@@ -19,7 +19,7 @@ Heater::Heater(int ms, Temperature* t, Timer* time) : Task(ms) {
 	heatflag = -1;
 	boilTimeHrs = 0;
 	boilTimeMins = 0;
-	boilTimeSeconds = 0;
+	boilTimeSeconds = 60*minutes;
 	timerSeconds = 0;
 	timeLeft = -1;
 }
@@ -45,6 +45,7 @@ void Heater::init_boilTime(int hrs, int min, int sec) {
 	boilTimeSeconds = sec + 60*min + 3600*hrs;
 	return;
 }
+
 int Heater::tick_function() {
 	int temptime = 0;
 	/* State transitions */
@@ -91,7 +92,7 @@ int Heater::tick_function() {
 		case INIT:
 			break;
 		case OFF:
-			init_boilTime(1, 0, 10);
+			//init_boilTime(1, 0, 10);
 			digitalWrite(6, LOW);
 			heatflag = 1;
 			break;
