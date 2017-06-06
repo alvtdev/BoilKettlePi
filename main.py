@@ -1,12 +1,27 @@
 import time
+import serial
 import os
 import subprocess
 from tkinter import *
 
 outputFile = "output.txt"
+mashFile = "mashtun.txt"
 bmsg = "Waiting for BK"
 afterid1 = -1;
 afterid2 = -1;
+
+#mash communication variables
+mashIP = "192.168.1.1"
+mashPort = "22"
+
+#keg communication variables
+ser = serial.Serial(
+	port = '/dev/ttyAMA0',
+	baudrate = 9600,
+	parity=serial.PARITY_NONE,
+	stopbits=serial.STOPBITS_ONE,
+	bytesize=serial.EIGHTBITS,
+	timeout=1)
 
 #mash time var
 mTime = None
@@ -22,6 +37,8 @@ bTime3 = None
 #process var
 global proc
 proc = None
+global procflag
+procflag = 0
 
 #Output functions
 def getOutputs():
@@ -34,24 +51,32 @@ def getOutputs():
 
 #Mash Tun Menu Functions 
 def getMashData():
+		#get inputs
     global mTime
     global mTemp1
     global mTemp2
     mTime = mashTimeEntry.get()
     mTemp1 = mashTemp1Entry.get()
     mTemp2 = mashTemp2Entry.get()
+		#set stringvar for gui display
     mTimeString.set(mTime)
     mTemp1String.set(mTemp1)
     mTemp2String.set(mTemp2)
-    file = open('mashtun.txt', 'w+')
-    file.write("Mash time: %s \n" % mTime)
-    file.write("Mash temp1: %s \n" % mTemp1)
-    file.write("Mash temp2: %s \n" % mTemp2)
-    #file.write("%s %s %s" % (mTime, mTemp1, mTemp2))
+		#write outputs to file
+    file = open(mashFile, 'w+')
+    #file.write("Mash time: %s \n" % mTime)
+    #file.write("Mash temp1: %s \n" % mTemp1)
+    #file.write("Mash temp2: %s \n" % mTemp2)
+    file.write("%s %s %s" % (mTime, mTemp1, mTemp2))
     file.close()
+    #send data to mash using netcat
+    commandString = "cat mashtun.txt | nc -u " + mashIP + " " + mashPort + " -w0"
+    #print(commandString)
+    os.system(commandString)
 
 #Boil Kettle Menu Functions
 def getBoilTimes():
+		#get boil times
     global bTime1
     global bTime2
     global bTime3
@@ -59,12 +84,9 @@ def getBoilTimes():
     bTime1 = bkTime1Entry.get()
     bTime2 = bkTime2Entry.get()
     bTime3 = bkTime3Entry.get()
-    #print(bTime1)
-    #print(bTime2)
-    #print(bTime3)
-    
+   	#calcoluate total boil time 
     bTotalTime = int(bTime1) + int(bTime2) + int(bTime3)
-
+		#set stringvars for gui display
     bTime1String.set(bTime1)
     bTime2String.set(bTime2)
     bTime3String.set(bTime3)
@@ -76,7 +98,17 @@ def startBoil():
     global proc
     proc = subprocess.Popen(['sudo', './BoilKettlePi', str(bTotalTime)])
     pid = proc.pid
+    global procflag
+    procflag = 1
     return
+    
+#Keg menu functions
+def sendDrinkName():
+	#TODO: serial name transfer to smart keg
+	drinkNameString = kegDrinkEntry.get()
+	drinkName.set(drinkNameString)
+	ser.write(bytes(drinkNameString, 'UTF-8'))
+	time.sleep(1)
 
 #Page navigation helper functions
 def goToMenuPage():
@@ -101,8 +133,16 @@ def goToMtSentPage():
     getMashData()
     mtSent_page.tkraise()
 
+def goToKegPage():
+		keg_page.tkraise()
+
+def goToKegSentPage():
+		sendDrinkName()
+		kegSent_page.tkraise()
+
 def exitbk():
-    proc.terminate()
+    if (procflag == 1):
+    	proc.terminate()
     exit(0)
 
 
@@ -114,7 +154,7 @@ bkui.columnconfigure(1, weight=1)
 bkui.columnconfigure(2, weight=1) 
 bkui.columnconfigure(3, weight=1)
 bkui.columnconfigure(4, weight=1)
-bkui.columnconfigure(5, weight=1)
+#bkui.columnconfigure(5, weight=1)
 bkui.rowconfigure(0, weight=1)
 bkui.rowconfigure(1, weight=1)
 bkui.rowconfigure(2, weight=1)
@@ -126,19 +166,22 @@ bkui.rowconfigure(5, weight=1)
 menu_page = Frame(bkui)
 bk_page = Frame(bkui) 
 bkConf_page = Frame(bkui)
-mt_page = Frame(bkui)
 out_page = Frame(bkui)
+mt_page = Frame(bkui)
 mtSent_page = Frame(bkui)
+keg_page = Frame(bkui)
+kegSent_page = Frame(bkui)
 
 #init config for all pages
-for frame in (menu_page, bk_page, bkConf_page, out_page, mt_page, mtSent_page):
+for frame in (menu_page, bk_page, bkConf_page, out_page, mt_page, mtSent_page, 
+	keg_page, kegSent_page):
     frame.grid(row=0, column=0, sticky=(N, S, E, W))
     frame.columnconfigure(0, weight=1)
     frame.columnconfigure(1, weight=1)
     frame.columnconfigure(2, weight=1) 
     frame.columnconfigure(3, weight=1)
     frame.columnconfigure(4, weight=1)
-    frame.columnconfigure(5, weight=1)
+#    frame.columnconfigure(5, weight=1)
     frame.rowconfigure(0, weight=1)
     frame.rowconfigure(1, weight=1)
     frame.rowconfigure(2, weight=1)
@@ -149,13 +192,15 @@ for frame in (menu_page, bk_page, bkConf_page, out_page, mt_page, mtSent_page):
 #MENU PAGE - (menu_page)
 mtConfig = Button(menu_page, text="MashTun Settings", command=goToMtPage)
 btConfig = Button(menu_page, text="BoilKettle Settings", command=goToBkPage)
+kegConfig = Button(menu_page, text="Keg Settings", command=goToKegPage)
 exitMenu = Button(menu_page, text='Exit', command=exitbk)
 menuMsg = Message(menu_page, text="Welcome to BoilKettlePi", width=10000)
 
 mtConfig.grid(row=5, column=0)
 btConfig.grid(row=5, column=1)
-exitMenu.grid(row=5, column=2)
-menuMsg.grid(row=0, column=1)
+kegConfig.grid(row=5, column=2)
+exitMenu.grid(row=5, column=3)
+menuMsg.grid(row=3, column=1)
 
 #BOIL KETTLE PAGE - (bk_page)
 #prompts and entries
@@ -295,6 +340,29 @@ mtSentTemp2Entry.grid(row=3, column=1)
 mtSentTemp2Units.grid(row=3, column=2)
 btsMTSent.grid(row=5, column=1)
 
+#KEG PAGE - keg_page
+drinkName = StringVar()
+menuKeg = Button(keg_page, text="Menu", command=goToMenuPage) 
+kegSettingsPrompt = Label(keg_page, text="Keg Settings") 
+kegDrinkPrompt = Label(keg_page, text="Drink Name:")
+kegDrinkEntry = Entry(keg_page)
+kegSendDrinkName = Button(keg_page, text="Send Keg Name", 
+	command=goToKegSentPage)
+
+kegSettingsPrompt.grid(row=0, column=1)
+menuKeg.grid(row=5, column=0)
+kegDrinkPrompt.grid(row=2, column=0)
+kegDrinkEntry.grid(row=2, column=1)
+kegSendDrinkName.grid(row=2, column=2)
+
+#KEG SENT PAGE - kegSent_page
+menuKegSent = Button(kegSent_page, text="Menu", command=goToMenuPage)
+kegSentMsg = Label(kegSent_page, text="Drink Name Sent:")
+kegSentDrink = Label(kegSent_page, textvariable=drinkName)
+
+menuKegSent.grid(row=5, column=2)
+kegSentMsg.grid(row=1, column=2)
+kegSentDrink.grid(row=2, column=2)
 
 menu_page.tkraise()
 bkui.mainloop()
