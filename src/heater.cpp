@@ -8,6 +8,7 @@
 #include "heater.hpp"
 #include <wiringPi.h>
 #include <iostream>
+#include <stdlib.h>
 
 Heater::Heater(int ms, Temperature* t, Timer* time, int minutes) : Task(ms) {
 	pinMode(6, OUTPUT);
@@ -56,14 +57,14 @@ int Heater::tick_function() {
 		case OFF:
 			if (heatflag != -1) {
 				state = HEAT;
-				std::cout << "state = HEAT" << std::endl;
+				//std::cout << "state = HEAT" << std::endl;
 			} 
 			break;
 		case HEAT:
 			if (temp >= 75.0) {
 				time->start_timer();
 				state = BOIL;
-				std::cout << "state = BOIL" << std::endl;
+				//std::cout << "state = BOIL" << std::endl;
 			}
 			else {
 				state = HEAT;
@@ -73,7 +74,7 @@ int Heater::tick_function() {
 			if (calc_timeLeft() <= 0) { 
 				time->stop_timer();
 				timeLeft = -10;
-				std::cout << "state = MAINTAIN" << std::endl;
+				//std::cout << "state = MAINTAIN" << std::endl;
 				state = MAINTAIN;
 			}
 			else {
@@ -110,6 +111,7 @@ int Heater::tick_function() {
 			*/
 			break;
 		case MAINTAIN:
+			/*
 			if (temp <= 75.0) { 
 				//std::cout << "Heater: ON" << std::endl;
 				digitalWrite(6, HIGH);
@@ -120,6 +122,8 @@ int Heater::tick_function() {
 				digitalWrite(6, LOW);
 				temp = t->get_temperature();
 			}
+			*/
+			exit(0);
 			break;
 		default:
 			break;
