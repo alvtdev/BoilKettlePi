@@ -44,6 +44,8 @@ double Sonar::poll_distance() {
 
 	travelTimeUsec = endTimeUsec - startTimeUsec;
 	double distInCM = 100*((travelTimeUsec/1000000.0) * 340.29)/2;
+	//height of pot is 11 inches - 27.94 cm
+	distInCM = 27.94 - distInCM;
 	return distInCM;
 }
 

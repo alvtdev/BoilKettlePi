@@ -72,7 +72,7 @@ void Output::output_Data() {
 	}
 	std::cout << "Temperature: " << temperature << " F" << std::endl;
 	std::cout << "Pressure: " << pressure << " Pa" << std::endl;
-	std::cout << "Distance: " << dist << " cm" << std::endl;
+	std::cout << "Water depth: " << dist << " cm" << std::endl;
 	std::cout << "Density: " << specGravBegin << " g/cm^3" << std::endl;
 	std::cout << std::endl;
 } 
@@ -95,7 +95,7 @@ void Output::output_to_file() {
 		}
 		outFile << "Temperature: " << temperature << " F \n";
 		outFile << "Pressure: " << pressure << " Pa \n";
-		outFile << "Distance: " << dist << " cm \n";
+		outFile << "Water Depth: " << dist << " cm \n";
 		outFile << "Density: " << specGravBegin << " g/cm^3 \n";
 	}
 	else {
