@@ -9,6 +9,7 @@
 #include "task.hpp"
 #include "output.hpp"
 #include <iostream>
+#include <stdlib.h>
 #include <fstream>
 
 Output::Output(int ms, Temperature* t, Pressure* p, Sonar* s, 
@@ -97,11 +98,11 @@ void Output::output_to_file() {
 				outFile << "Boil Status: Filling \n";
 			}
 			else if (h->get_fullStatus() == 1) {
-				outFile << "Boil Status: Heating.\n";
+				outFile << "Boil Status: Heating\n";
 			}
 		}
 		else if (timeLeft < -5) {
-			outFile << "Boil Status: Finished.\n";
+			outFile << "Boil Status: Finished\n";
 		}
 		outFile << "Temperature: " << temperature << " F \n";
 		outFile << "Pressure: " << pressure << " Pa \n";
@@ -146,7 +147,7 @@ int Output::tick_function() {
 			break;
 		case OUT:
 			calc_outputTimes();
-			output_Data();
+			//output_Data();
 			output_to_file();
 			break;
 		default:

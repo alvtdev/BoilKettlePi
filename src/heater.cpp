@@ -77,7 +77,7 @@ int Heater::tick_function() {
 			} 
 			break;
 		case HEAT:
-			if (temp >= 75.0) {
+			if (temp >= 120.0) {
 				time->start_timer();
 				state = BOIL;
 				//std::cout << "state = BOIL" << std::endl;
@@ -139,7 +139,7 @@ int Heater::tick_function() {
 				temp = t->get_temperature();
 			}
 			*/
-			exit(0);
+			digitalWrite(6, LOW);
 			break;
 		default:
 			break;
