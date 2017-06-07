@@ -7,15 +7,28 @@ from tkinter import *
 outputFile = "output.txt"
 mashFile = "mashtun.txt"
 bmsg = "Waiting for BK"
-afterid1 = -1;
-afterid2 = -1;
+os.system('export WIRINGPI_GPIOMEM=1')
+
+#find and remove existing output.txt
+if (os.path.exists(outputFile)):
+	os.remove(outputFile)
 
 #mash communication variables
-mashIP = "169.254.199.204"
+mashIP = "192.168.1.236"
 mashPort = "8080"
 
+global ser
+ser = None
 #keg communication variables
-ser = serial.Serial('/dev/ttyACM0', 9600)
+ttyName = '/dev/ttyACM0'
+ttyAvailable = 0 #flag for ser
+#determins if ardino keg is connected
+if os.path.exists(ttyName):
+	ttyAvailable = 1
+	ser = serial.Serial('/dev/ttyACM0', 9600)
+else:
+	ttyAvailable = 0
+#set up only if tty is available
 
 #mash time var
 mTime = None
@@ -42,6 +55,20 @@ def getOutputs():
     outmsg.configure(text=bmsg)
     afterid1 = bkui.after(1000, getOutputs)
     #print(afterid1)
+
+def disableFirstReminder():
+		firstReminderMsg.config(state=DISABLED)
+
+def enableFirstReminder():
+		firstReminderMsg.config(state=ACTIVE)
+		bkui.after(60000, disableFirstReminder)
+
+def disableSecondReminder():
+		secondReminderMsg.config(state=DISABLED)
+
+def enableSecondReminder():
+		secondReminderMsg.config(state=ACTIVE)
+		bkui.after(60000, disableSecondReminder);
 
 #Mash Tun Menu Functions 
 def getMashData():
@@ -79,10 +106,13 @@ def getBoilTimes():
     if not bTime3:
    		if bTime2:
    			bTotalTime = int(bTime1) + int(bTime2)
+   			bkui.after( (bTime2*60000), enableFirstReminder)
    		elif not bTime2:
    			bTotalTime = int(bTime1)
     else:
    		bTotalTime = int(bTime1) + int(bTime2) + int(bTime3)
+   		bkui.after(int(int(bTime2)*60000), enableFirstReminder)
+   		bkui.after(int((int(bTime2) + int(bTime3))*60000), enableSecondReminder)
     #bTotalTime = int(bTime1) + int(bTime2) + int(bTime3)
 		#set stringvars for gui display
     bTime1String.set(bTime1)
@@ -110,8 +140,14 @@ def sendDrinkName():
 	if not ser.isOpen():
 		ser.open()
 	ser.flushOutput()
-	time.sleep(1)
+	drinkNameString = drinkNameString + "!"
+	time.sleep(4)
 	ser.write(drinkNameString.encode())
+	#ser.write(drinkNameString.encode())
+	#ser.write(drinkNameString.encode())
+	print("sending: " + drinkNameString)
+	#printOSCommand = "python sertest.py " + drinkNameString
+	#os.system(printOSCommand)
 
 #Page navigation helper functions
 def goToMenuPage():
@@ -209,6 +245,11 @@ exitMenu.grid(row=4, column=4, sticky=N+S+E+W)
 menuMsg.grid(row=2, column=2, sticky=N+S+E+W)
 menuMsg1.grid(row=2, column=1, sticky=N+S+E)
 menuMsg2.grid(row=2, column=3, sticky=N+S+W)
+
+if ttyAvailable == 0:
+	kegConfig.config(state=DISABLED)
+elif ttyAvailable == 1:
+	kegConfig.config(state=ACTIVE)
 
 #BOIL KETTLE PAGE - (bk_page)
 #PAGE CONFIG
@@ -309,12 +350,18 @@ out_page.grid_columnconfigure(2, weight=1)
 out_page.grid_rowconfigure(0, weight=1)
 out_page.grid_rowconfigure(1, weight=1)
 out_page.grid_rowconfigure(2, weight=1)
+out_page.grid_rowconfigure(3, weight=1)
+out_page.grid_rowconfigure(4, weight=1)
 
 exitOut = Button(out_page, text='Exit', command=exitbk)
 outmsg = Message(out_page, text=bmsg, font=("TkDefaultFont", 16), width=10000)
+firstReminderMsg = Label(out_page, text="ADD FIRST INGREDIENT", state=DISABLED)
+secondReminderMsg = Label(out_page, text="ADD SECOND INGREDIENT", state=DISABLED)
 
 outmsg.grid(row=1, column=1, sticky=N+S+E+W)
-exitOut.grid(row=2, column=2, sticky=N+S+E+W)
+firstReminderMsg.grid(row=2, column=1)
+secondReminderMsg.grid(row=3, column=1)
+exitOut.grid(row=4, column=2, sticky=N+S+E+W)
 
 #MT PAGE - (mt_page)
 #PAGE CONFIG
