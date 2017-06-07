@@ -139,15 +139,18 @@ def sendDrinkName():
 	drinkName.set(drinkNameString)
 	if not ser.isOpen():
 		ser.open()
+	ser.flushInput()
 	ser.flushOutput()
 	drinkNameString = drinkNameString + "!"
 	time.sleep(4)
 	ser.write(drinkNameString.encode())
+	print("sending: " + str(drinkNameString.encode()))
+	time.sleep(2)
+	#test arduino code
+	#drinkNameReceive = ser.readline()
 	#ser.write(drinkNameString.encode())
 	#ser.write(drinkNameString.encode())
-	print("sending: " + drinkNameString)
-	#printOSCommand = "python sertest.py " + drinkNameString
-	#os.system(printOSCommand)
+	##print("received " + drinkNameReceive.decode())
 
 #Page navigation helper functions
 def goToMenuPage():
