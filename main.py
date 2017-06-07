@@ -144,7 +144,7 @@ def sendDrinkName():
 	drinkNameString = drinkNameString + "!"
 	time.sleep(4)
 	ser.write(drinkNameString.encode())
-	print("sending: " + str(drinkNameString.encode()))
+	#print("sending: " + str(drinkNameString.encode()))
 	time.sleep(2)
 	#test arduino code
 	#drinkNameReceive = ser.readline()
