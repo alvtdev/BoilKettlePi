@@ -9,6 +9,8 @@
 #include "task.hpp"
 #include <wiringPi.h> 
 
+#define BK_MAX_HEIGHT_CM 27.94
+
 class Sonar : public Task {
 	public:
 		Sonar(int ms);

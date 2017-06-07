@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
 		T->add_task(t); 
 
 		//T->add_task(new Heater(250, t, time));
-		Heater* h = new Heater(250, t, time, bTimeMinutes);
+		Heater* h = new Heater(250, t, time, s, bTimeMinutes);
 		T->add_task(h);
 
 

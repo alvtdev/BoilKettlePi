@@ -30,7 +30,7 @@ double Sonar::get_distance() {
 double Sonar::calc_distance(volatile long travelTimeUsec) {
 	double distInCM = 100*((travelTimeUsec/1000000.0) * 340.29)/2;
 	//height of pot is 11 inches - 27.94 cm
-	distInCM = 27.94 - distInCM;
+	distInCM = BK_MAX_HEIGHT_CM - distInCM;
 	if (distInCM < 0) {
 		return 0;
 	}

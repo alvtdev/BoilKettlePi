@@ -93,7 +93,12 @@ void Output::output_to_file() {
 			outFile << "Boil Status: Finished \n";
 		} 
 		else if (timeLeft == -1) {
-			outFile << "Boil Status: Heating.\n";
+			if (h->get_fullStatus() == -1) {
+				outFile << "Boil Status: Filling \n";
+			}
+			else if (h->get_fullStatus() == 1) {
+				outFile << "Boil Status: Heating.\n";
+			}
 		}
 		else if (timeLeft < -5) {
 			outFile << "Boil Status: Finished.\n";
@@ -101,8 +106,7 @@ void Output::output_to_file() {
 		outFile << "Temperature: " << temperature << " F \n";
 		outFile << "Pressure: " << pressure << " Pa \n";
 		outFile << "Water Depth: " << dist << " cm \n";
-		outFile << "Density: " << specGravBegin << " g/cm^3 \n";
-	}
+		outFile << "Density: " << specGravBegin << " g/cm^3 \n"; }
 	else {
 		std::cout << "Error opening output.txt" << std::endl;
 	}
@@ -142,7 +146,7 @@ int Output::tick_function() {
 			break;
 		case OUT:
 			calc_outputTimes();
-			//output_Data();
+			output_Data();
 			output_to_file();
 			break;
 		default:

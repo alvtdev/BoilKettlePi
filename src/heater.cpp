@@ -11,14 +11,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Heater::Heater(int ms, Temperature* t, Timer* time, int minutes) : Task(ms) {
+Heater::Heater(int ms, Temperature* t, Timer* time, Sonar* s, int minutes) : Task(ms) {
 	pinMode(6, OUTPUT);
 	digitalWrite(6, LOW);
 	state = INIT;
 	this->t = t;	
 	this->time = time;
+	this->dist = s;
 	temp = t->get_temperature();
 	heatflag = -1;
+	fullflag = -1;
 	boilTimeHrs = 0;
 	boilTimeMins = 0;
 	boilTimeSeconds = 60*minutes;
@@ -43,6 +45,10 @@ int Heater::get_timerSeconds() {
 	return timerSeconds;
 }
 
+int Heater::get_fullStatus() {
+	return fullflag; 
+}
+
 void Heater::init_boilTime(int hrs, int min, int sec) {
 	boilTimeSeconds = sec + 60*min + 3600*hrs;
 	return;
@@ -56,9 +62,18 @@ int Heater::tick_function() {
 			state = OFF;
 			break;
 		case OFF:
+			//state waits for boil kettle to fill before heating
 			if (heatflag != -1) {
-				state = HEAT;
-				//std::cout << "state = HEAT" << std::endl;
+				if (dist->get_distance() > BK_MAX_HEIGHT_CM/2) {
+					fullflag = 1;
+					state = HEAT;
+					//std::cout << "state = HEAT" << std::endl;
+				}
+				else {
+					fullflag = -1;
+					state = OFF;
+					//std::cout << "state = OFF" << std::endl;
+				}
 			} 
 			break;
 		case HEAT:
