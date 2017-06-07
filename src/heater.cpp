@@ -8,6 +8,7 @@
 #include "heater.hpp"
 #include <wiringPi.h>
 #include <iostream>
+#include <stdio.h>
 #include <stdlib.h>
 
 Heater::Heater(int ms, Temperature* t, Timer* time, int minutes) : Task(ms) {
