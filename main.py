@@ -11,7 +11,7 @@ os.system('export WIRINGPI_GPIOMEM=1')
 
 #find and remove existing output.txt
 if (os.path.exists(outputFile)):
-	os.remove(outputFile)
+  os.remove(outputFile)
 
 #mash communication variables
 mashIP = "192.168.1.236"
@@ -24,10 +24,10 @@ ttyName = '/dev/ttyACM0'
 ttyAvailable = 0 #flag for ser
 #determins if ardino keg is connected
 if os.path.exists(ttyName):
-	ttyAvailable = 1
-	ser = serial.Serial('/dev/ttyACM0', 9600)
+  ttyAvailable = 1
+  ser = serial.Serial('/dev/ttyACM0', 9600)
 else:
-	ttyAvailable = 0
+  ttyAvailable = 0
 #set up only if tty is available
 
 #mash time var
@@ -53,49 +53,87 @@ def getOutputs():
     bmsg = ftxt.read()
     ftxt.close()
     outmsg.configure(text=bmsg)
+    if (os.path.exists("boil.txt")):
+        parseForReminders()
     afterid1 = bkui.after(1000, getOutputs)
     #print(afterid1)
 
+#reminder flags and functions
+def parseForReminders():
+    global firstReminderFlag
+    global secondReminderFlag
+    ftxt = open("boil.txt", "r+") 
+    # boil.txt tells whether or not boil has started
+    boilMsg = ftxt.read()
+    #print("contents of boil.txt: " + boilMsg)
+    if boilMsg == "1":
+        if firstReminderFlag == 1:
+            #start timer
+            #print("setting first timer")
+            bkui.after(int(int(bTime2)*60000), enableFirstReminder)
+            firstReminderFlag = 0
+        if secondReminderFlag == 1: 
+            #start timer
+            #print("setting second timer")
+            bkui.after(int(int(bTime3)*60000), enableSecondReminder)
+            secondReminderFlag = 0
+        enableMainReminder() 
+    ftxt.close()
+    os.remove("boil.txt")
+    #print("boil.txt removed")
+    
+def disableMainReminder():
+    mainReminderMsg.config(state=DISABLED)
+
+def enableMainReminder():
+    mainReminderMsg.config(state=ACTIVE)
+    bkui.after(60000, disableMainReminder)
+
 def disableFirstReminder():
-		firstReminderMsg.config(state=DISABLED)
+    #print("disabling first reminder")
+    firstReminderMsg.config(state=DISABLED)
 
 def enableFirstReminder():
-		firstReminderMsg.config(state=ACTIVE)
-		bkui.after(60000, disableFirstReminder)
+    #print("enabling first reminder")
+    firstReminderMsg.config(state=ACTIVE)
+    bkui.after(60000, disableFirstReminder)
 
 def disableSecondReminder():
-		secondReminderMsg.config(state=DISABLED)
+    #print("disabling second reminder")
+    secondReminderMsg.config(state=DISABLED)
 
 def enableSecondReminder():
-		secondReminderMsg.config(state=ACTIVE)
-		bkui.after(60000, disableSecondReminder);
+    #print("enabling second reminder")
+    secondReminderMsg.config(state=ACTIVE)
+    bkui.after(60000, disableSecondReminder);
 
 #Mash Tun Menu Functions 
 def getMashData():
-		#get inputs
+    #get inputs
     global mTime
     global mTemp1
     global mTemp2
     mTime = mashTimeEntry.get()
     mTemp1 = mashTemp1Entry.get()
     mTemp2 = mashTemp2Entry.get()
-		#set stringvar for gui display
+    #set stringvar for gui display
     mTimeString.set(mTime)
     mTemp1String.set(mTemp1)
     mTemp2String.set(mTemp2)
-		#write outputs to file
+    #write outputs to file
     if mTime and mTemp1 and mTemp2:
-    	file = open(mashFile, 'w+')
-    	file.write("%s %s %s" % (mTemp1, mTemp2, mTime))
-    	file.close()
-    	#send data to mash using netcat
-    	commandString = "cat mashtun.txt | nc -w 3 " + mashIP + " " + mashPort 
-    	#print(commandString)
-    	os.system(commandString)
+      file = open(mashFile, 'w+')
+      file.write("%s %s %s" % (mTemp1, mTemp2, mTime))
+      file.close()
+      #send data to mash using netcat
+      commandString = "cat mashtun.txt | nc -w 3 " + mashIP + " " + mashPort 
+      #print(commandString)
+      os.system(commandString)
+      os.remove(mashFile)
 
 #Boil Kettle Menu Functions
 def getBoilTimes():
-		#get boil times
+    #get boil times
     global bTime1
     global bTime2
     global bTime3
@@ -103,25 +141,26 @@ def getBoilTimes():
     bTime1 = bkTime1Entry.get()
     bTime2 = bkTime2Entry.get()
     bTime3 = bkTime3Entry.get()
-    if not bTime3:
-   		if bTime2:
-   			bTotalTime = int(bTime1) + int(bTime2)
-   			bkui.after( (bTime2*60000), enableFirstReminder)
-   		elif not bTime2:
-   			bTotalTime = int(bTime1)
-    else:
-   		bTotalTime = int(bTime1) + int(bTime2) + int(bTime3)
-   		bkui.after(int(int(bTime2)*60000), enableFirstReminder)
-   		bkui.after(int((int(bTime2) + int(bTime3))*60000), enableSecondReminder)
-    #bTotalTime = int(bTime1) + int(bTime2) + int(bTime3)
-		#set stringvars for gui display
+    #if not bTime3:
+    #  if bTime2:
+    #    bTotalTime = int(bTime1) + int(bTime2)
+    #    bkui.after( (bTime2*60000), enableFirstReminder)
+    #  elif not bTime2:
+    #    bTotalTime = int(bTime1)
+    #else:
+    #  bTotalTime = int(bTime1) + int(bTime2) + int(bTime3)
+    #  bkui.after(int(int(bTime2)*60000), enableFirstReminder)
+    #  bkui.after(int((int(bTime2) + int(bTime3))*60000), enableSecondReminder)
+    bTotalTime = int(bTime1)
+    #set stringvars for gui display
     bTime1String.set(bTime1)
     bTime2String.set(bTime2)
     bTime3String.set(bTime3)
     bTotalTimeString.set(bTotalTime)
 
 def startBoil():
-    #TODO: call C program with boil time as inputs
+    global firstReminderFlag
+    global secondReminderFlag
     file = open(outputFile, 'w+')
     file.close()
     os.system('export WIRINGPI_GPIOMEM=1')
@@ -130,27 +169,36 @@ def startBoil():
     pid = proc.pid
     global procflag
     procflag = 1
+    if bTime2:
+        #print("setting first flag")
+        firstReminderFlag = 1
+    else:
+        firstReminderFlag = 0
+    if bTime3:
+        #print("setting second flag")
+        secondReminderFlag = 1
+    else:
+        secondReminderFlag = 0
     return
     
 #Keg menu functions
 def sendDrinkName():
-	#TODO: serial name transfer to smart keg
-	drinkNameString = kegDrinkEntry.get()
-	drinkName.set(drinkNameString)
-	if not ser.isOpen():
-		ser.open()
-	ser.flushInput()
-	ser.flushOutput()
-	drinkNameString = drinkNameString + "!"
-	time.sleep(4)
-	ser.write(drinkNameString.encode())
-	#print("sending: " + str(drinkNameString.encode()))
-	time.sleep(2)
-	#test arduino code
-	#drinkNameReceive = ser.readline()
-	#ser.write(drinkNameString.encode())
-	#ser.write(drinkNameString.encode())
-	##print("received " + drinkNameReceive.decode())
+    drinkNameString = kegDrinkEntry.get()
+    drinkName.set(drinkNameString)
+    if not ser.isOpen():
+      ser.open()
+    ser.flushInput()
+    ser.flushOutput()
+    #drinkNameString = drinkNameString + "!"
+    time.sleep(4)
+    ser.write(drinkNameString.encode())
+    #print("sending: " + str(drinkNameString.encode()))
+    time.sleep(2)
+    #test arduino code
+    #drinkNameReceive = ser.readline()
+    #ser.write(drinkNameString.encode())
+    #ser.write(drinkNameString.encode())
+    ##print("received " + drinkNameReceive.decode())
 
 #Page navigation helper functions
 def goToMenuPage():
@@ -176,16 +224,16 @@ def goToMtSentPage():
     mtSent_page.tkraise()
 
 def goToKegPage():
-		keg_page.tkraise()
+    keg_page.tkraise()
 
 def goToKegSentPage():
-		sendDrinkName()
-		kegSent_page.tkraise()
+    sendDrinkName()
+    kegSent_page.tkraise()
 
 def exitbk():
     if (procflag == 1):
-    	proc.terminate()
-    	os.remove(outputFile)
+      proc.terminate()
+      os.remove(outputFile)
     exit(0)
 
 
@@ -208,7 +256,7 @@ kegSent_page = Frame(bkui)
 
 #init config for all pages
 for frame in (menu_page, bk_page, bkConf_page, out_page, mt_page, mtSent_page, 
-	keg_page, kegSent_page):
+  keg_page, kegSent_page):
     frame.grid(row=0, column=0, sticky=N+S+E+W)
     frame.grid_columnconfigure(0, weight=1)
     frame.grid_rowconfigure(0, weight=1)
@@ -228,15 +276,15 @@ menu_page.grid_rowconfigure(3, weight=1)
 menu_page.grid_rowconfigure(4, weight=1)
 #BUTTONS AND PROMPTS
 mtConfig = Button(menu_page, text="MashTun Settings", width=colwidth,
-	command=goToMtPage)
+  command=goToMtPage)
 btConfig = Button(menu_page, text="BoilKettle Settings", width=colwidth, 
-	command=goToBkPage)
+  command=goToBkPage)
 kegConfig = Button(menu_page, text="Keg Settings", width=colwidth, 
-	command=goToKegPage)
+  command=goToKegPage)
 exitMenu = Button(menu_page, text='Exit', width=colwidth, command=exitbk)
 emptyLabel = Label(menu_page, text=' ', width=colwidth)
 menuMsg = Label(menu_page, text="ome to BoilKe", 
-	font=("TkDefaultFont", 18))
+  font=("TkDefaultFont", 18))
 menuMsg1 = Label(menu_page, text = "Welc", font=("TkDefaultFont",18))
 menuMsg2 = Label(menu_page, text = "ttlePi", font=("TkDefaultFont", 18))
 
@@ -250,9 +298,9 @@ menuMsg1.grid(row=2, column=1, sticky=N+S+E)
 menuMsg2.grid(row=2, column=3, sticky=N+S+W)
 
 if ttyAvailable == 0:
-	kegConfig.config(state=DISABLED)
+  kegConfig.config(state=DISABLED)
 elif ttyAvailable == 1:
-	kegConfig.config(state=ACTIVE)
+  kegConfig.config(state=ACTIVE)
 
 #BOIL KETTLE PAGE - (bk_page)
 #PAGE CONFIG
@@ -266,13 +314,13 @@ bk_page.grid_rowconfigure(3, weight=1)
 bk_page.grid_rowconfigure(4, weight=1)
 #prompts and entries
 bkSettings = Message(bk_page, text="BoilKettle Settings", width = 10000)
-bkTime1 = Label(bk_page, text="Initial Boil:")
+bkTime1 = Label(bk_page, text="Total Boil Time:")
 bkTime1Entry = Entry(bk_page)
 bkTime1Units = Label(bk_page, text="minutes")
-bkTime2 = Label(bk_page, text="1st reminder:")
+bkTime2 = Label(bk_page, text="1st reminder at:")
 bkTime2Entry = Entry(bk_page)
 bkTime2Units = Label(bk_page, text="minutes")
-bkTime3 = Label(bk_page, text="2nd reminder:")
+bkTime3 = Label(bk_page, text="2nd reminder at:")
 bkTime3Entry = Entry(bk_page)
 bkTime3Units = Label(bk_page, text="minutes")
 #navigation buttons
@@ -304,20 +352,19 @@ bkConf_page.grid_rowconfigure(1, weight=1)
 bkConf_page.grid_rowconfigure(2, weight=1)
 bkConf_page.grid_rowconfigure(3, weight=1)
 bkConf_page.grid_rowconfigure(4, weight=1)
-bkConf_page.grid_rowconfigure(5, weight=1)
 #BUTTONS AND PROMPTS
 bTime1String = StringVar()
 bTime2String = StringVar()
 bTime3String = StringVar()
 bTotalTimeString = StringVar()
 bkConfSettings = Message(bkConf_page, text="Confirm BoilKettle Settings", width = 10000)
-bkConfTime1 = Label(bkConf_page, text="Initial Boil:")
-bkConfTime1Entry = Label(bkConf_page, textvariable=bTime1String)
-bkConfTime1Units = Label(bkConf_page, text="minutes")
-bkConfTime2 = Label(bkConf_page, text="1st reminder:")
+#bkConfTime1 = Label(bkConf_page, text="Initial Boil:")
+#bkConfTime1Entry = Label(bkConf_page, textvariable=bTime1String)
+#bkConfTime1Units = Label(bkConf_page, text="minutes")
+bkConfTime2 = Label(bkConf_page, text="1st reminder at:")
 bkConfTime2Entry = Label(bkConf_page, textvariable=bTime2String)
 bkConfTime2Units = Label(bkConf_page, text="minutes")
-bkConfTime3 = Label(bkConf_page, text="2nd reminder:")
+bkConfTime3 = Label(bkConf_page, text="2nd reminder at:")
 bkConfTime3Entry = Label(bkConf_page, textvariable=bTime3String)
 bkConfTime3Units = Label(bkConf_page, text="minutes")
 bkConfTotalTime = Label(bkConf_page, text="Total Boil Time:")
@@ -329,21 +376,21 @@ startBKConf = Button(bkConf_page, text="Start Boil", command=goToOutPage)
 exitBKConf = Button(bkConf_page, text='Exit', command=exitbk)
 
 bkConfSettings.grid(row=0, column=1, sticky=N+S+E+W)
-bkConfTime1.grid(row=1, column=0, sticky=N+S+E+W)
-bkConfTime1Entry.grid(row=1, column=1, sticky=N+S+E+W)
-bkConfTime1Units.grid(row=1, column=2, sticky=N+S+E+W)
+#bkConfTime1.grid(row=1, column=0, sticky=N+S+E+W)
+#bkConfTime1Entry.grid(row=1, column=1, sticky=N+S+E+W)
+#bkConfTime1Units.grid(row=1, column=2, sticky=N+S+E+W)
+bkConfTotalTime.grid(row=1, column=0, sticky=N+S+E+W)
+bkConfTotalTimeEntry.grid(row=1, column=1, sticky=N+S+E+W)
+bkConfTotalTimeUnits.grid(row=1, column=2, sticky=N+S+E+W)
 bkConfTime2.grid(row=2, column=0, sticky=N+S+E+W)
 bkConfTime2Entry.grid(row=2, column=1, sticky=N+S+E+W)
 bkConfTime2Units.grid(row=2, column=2, sticky=N+S+E+W)
 bkConfTime3.grid(row=3, column=0, sticky=N+S+E+W)
 bkConfTime3Entry.grid(row=3, column=1, sticky=N+S+E+W)
 bkConfTime3Units.grid(row=3, column=2, sticky=N+S+E+W)
-bkConfTotalTime.grid(row=4, column=0, sticky=N+S+E+W)
-bkConfTotalTimeEntry.grid(row=4, column=1, sticky=N+S+E+W)
-bkConfTotalTimeUnits.grid(row=4, column=2, sticky=N+S+E+W)
-menuBKConf.grid(row=5, column=0, sticky=N+S+E+W)
-startBKConf.grid(row=5, column=1, sticky=N+S+E+W)
-exitBKConf.grid(row=5, column=2, sticky=N+S+E+W)
+menuBKConf.grid(row=4, column=0, sticky=N+S+E+W)
+startBKConf.grid(row=4, column=1, sticky=N+S+E+W)
+exitBKConf.grid(row=4, column=2, sticky=N+S+E+W)
 
 #output page - (out_page)
 #PAGE CONFIG
@@ -358,12 +405,14 @@ out_page.grid_rowconfigure(4, weight=1)
 
 exitOut = Button(out_page, text='Exit', command=exitbk)
 outmsg = Message(out_page, text=bmsg, font=("TkDefaultFont", 16), width=10000)
-firstReminderMsg = Label(out_page, text="ADD FIRST INGREDIENT", state=DISABLED)
-secondReminderMsg = Label(out_page, text="ADD SECOND INGREDIENT", state=DISABLED)
+mainReminderMsg = Label(out_page, text="ADD FIRST INGREDIENT", state=DISABLED)
+firstReminderMsg = Label(out_page, text="ADD SECOND INGREDIENT", state=DISABLED)
+secondReminderMsg = Label(out_page, text="ADD THIRD INGREDIENT", state=DISABLED)
 
 outmsg.grid(row=1, column=1, sticky=N+S+E+W)
+mainReminderMsg.grid(row=2, column=0)
 firstReminderMsg.grid(row=2, column=1)
-secondReminderMsg.grid(row=3, column=1)
+secondReminderMsg.grid(row=2, column=2)
 exitOut.grid(row=4, column=2, sticky=N+S+E+W)
 
 #MT PAGE - (mt_page)
@@ -464,7 +513,7 @@ kegSettingsPrompt = Label(keg_page, text="Keg Settings")
 kegDrinkPrompt = Label(keg_page, text="Drink Name:")
 kegDrinkEntry = Entry(keg_page)
 kegSendDrinkName = Button(keg_page, text="Send Keg Name", 
-	command=goToKegSentPage)
+  command=goToKegSentPage)
 
 kegSettingsPrompt.grid(row=0, column=1, sticky=N+S+E+W)
 menuKeg.grid(row=5, column=0, sticky=N+S+E+W)
