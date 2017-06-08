@@ -95,7 +95,7 @@ void Output::output_to_file() {
 		} 
 		else if (timeLeft == -1) {
 			if (h->get_fullStatus() == -1) {
-				outFile << "Boil Status: Filling \n";
+				outFile << "Boil Status: Waiting to be Full \n";
 			}
 			else if (h->get_fullStatus() == 1) {
 				outFile << "Boil Status: Heating\n";
@@ -147,7 +147,7 @@ int Output::tick_function() {
 			break;
 		case OUT:
 			calc_outputTimes();
-			//output_Data();
+		//	output_Data();
 			output_to_file();
 			break;
 		default:

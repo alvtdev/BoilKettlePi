@@ -87,7 +87,7 @@ int Heater::tick_function() {
             } 
             break;
         case HEAT:
-            if (temp >= 75.0) {
+            if (temp >= 200.0) {
                 time->start_timer();
                 create_boilText();
                 state = BOIL;

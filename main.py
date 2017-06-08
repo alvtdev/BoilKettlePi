@@ -141,16 +141,6 @@ def getBoilTimes():
     bTime1 = bkTime1Entry.get()
     bTime2 = bkTime2Entry.get()
     bTime3 = bkTime3Entry.get()
-    #if not bTime3:
-    #  if bTime2:
-    #    bTotalTime = int(bTime1) + int(bTime2)
-    #    bkui.after( (bTime2*60000), enableFirstReminder)
-    #  elif not bTime2:
-    #    bTotalTime = int(bTime1)
-    #else:
-    #  bTotalTime = int(bTime1) + int(bTime2) + int(bTime3)
-    #  bkui.after(int(int(bTime2)*60000), enableFirstReminder)
-    #  bkui.after(int((int(bTime2) + int(bTime3))*60000), enableSecondReminder)
     bTotalTime = int(bTime1)
     #set stringvars for gui display
     bTime1String.set(bTime1)
